@@ -73,7 +73,10 @@ const options: swaggerJSDoc.OAS3Options = {
       },
     ],
   },
-  apis: [path.join(__dirname, "./router/*.ts")],
+  apis: [
+    path.join(__dirname, "./router/*.ts"),
+    path.join(__dirname, "./router/*/*.ts"),
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -84,7 +87,7 @@ app.get('/swagger.json', function(req, res) {
   res.send(swaggerSpec);
 });
 
-app.use(router);
+router(app)
 
 app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })

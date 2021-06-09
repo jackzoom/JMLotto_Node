@@ -1,13 +1,13 @@
 import express from "express";
-import { getUser } from "../controllers/user";
+import { getUser } from "../../controllers/user";
 const router = express.Router();
 
 /**
  * @swagger
  *
- * /client/user/getUser:
+ * /admin/user/getUser:
  *   get:
- *     summary: 获取用户信息
+ *     summary: 获取指定用户信息
  *     description: 根据Token获取用户信息
  *     tags:
  *       - name: User
@@ -19,6 +19,11 @@ const router = express.Router();
  *         description: auth token.
  *         in: header
  *         required: false
+ *         type: string
+ *       - name: userId
+ *         description: 用户编号
+ *         in: query
+ *         required: true
  *         type: string
  *     responses:
  *       200:
