@@ -1,16 +1,16 @@
 import express from "express";
-import { getUser } from "../../controllers/user";
+import { getUserList } from "../../controllers/admin/user";
 const router = express.Router();
 
 /**
  * @swagger
  *
- * /admin/user/getUser:
+ * /admin/user:
  *   get:
- *     summary: 获取指定用户信息
- *     description: 根据Token获取用户信息
+ *     summary: 获取用户列表
+ *     description: 获取用户列表
  *     tags:
- *       - name: User
+ *       - name: Admin
  *         description: 用户管理
  *     produces:
  *       - application/json
@@ -44,5 +44,5 @@ const router = express.Router();
  *                           type: string
  *                           description: 用户名称
  */
-router.get("/getUser", getUser);
+router.get("/", getUserList);
 export default router;

@@ -3,8 +3,22 @@ import mongoose from "mongoose";
 import { NextFunction } from "express";
 
 export type UserDocument = mongoose.Document & {
-  email: string;
+  openId: string;
+  avatarUrl: string;
+  nickName: string;
+  gender: number;
+  country: string;
+  province: string;
+  city: string;
+  language: string;
+  unionId: string;
+  phoneNumber: number;
+  countryCode: number;
   password: string;
+  sessionKey: string;
+  lastLogin: Date;
+  createTime: Date;
+  parentId: string;
   comparePassword: comparePasswordFunction;
 };
 
@@ -13,15 +27,25 @@ type comparePasswordFunction = (
   cb: (err: any, isMatch: any) => void
 ) => void;
 
-export interface AuthToken {
-  accessToken: string;
-  kind: string;
-}
-
 const userSchema = new mongoose.Schema<UserDocument>(
   {
-    email: { type: String, unique: true },
+    openId: { type: String, unique: true },
+    avatarUrl: String,
+    nickName: String,
+    gender: Number,
+    country: String,
+    province: String,
+    city: String,
+    language: String,
+    unionId: { type: String, unique: true },
+    phoneNumber: { type: Number, unique: true },
+    countryCode: Number,
+    sessionKey: String,
+    account: { type: String, unique: true },
     password: String,
+    lastLogin: Date,
+    createTime: Date,
+    parentId: String,
   },
   { timestamps: true }
 );

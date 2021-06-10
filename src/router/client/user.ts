@@ -1,5 +1,5 @@
 import express from "express";
-import { getUser } from "../../controllers/user";
+import { getUser } from "../../controllers/client/user";
 const router = express.Router();
 
 /**
@@ -10,7 +10,7 @@ const router = express.Router();
  *     summary: 获取用户信息
  *     description: 根据Token获取用户信息
  *     tags:
- *       - name: User
+ *       - name: Client
  *         description: 用户管理
  *     produces:
  *       - application/json
