@@ -1,10 +1,41 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
-import { ResponseHandle } from "../base";
+import Base from "../base";
+import { User, UserDocument } from "../../models/user";
 
-/**
- * User: getUserList
- * @route GET /admin/user
- */
-export const getUserList = (req: Request, res: Response) => {
-  ResponseHandle(res, req.query);
-};
+export default new (class AdminUser extends Base {
+  constructor() {
+    super();
+    this.getUserList = this.getUserList.bind(this);
+  }
+  /**
+   * GetUserList
+   * @group AdminUser
+   * @route GET /admin/user
+   * @param req
+   * @param res
+   */
+  async getUserList(req: Request, res: Response) {
+    User.find().then((data) => {
+      this.ResponseSuccess(res, data);
+    });
+  }
+
+  /**
+   * GetUser
+   * @group AdminUser
+   * @route GET /admin/user/getUser
+   * @param req
+   * @param res
+   */
+  async getUser(req: Request, res: Response) {
+    User.aggregate([
+      {
+        $match: {
+          userId: req.query.userId,
+        },
+      },
+    ]).then((data) => {
+      this.ResponseSuccess(res, data);
+    });
+  }
+})();

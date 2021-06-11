@@ -1,6 +1,6 @@
-import express from "express";
-import { getUserList } from "../../controllers/admin/user";
-const router = express.Router();
+import { Router } from "express";
+import AdminUser from "../../controllers/admin/user";
+const router: Router = Router({ caseSensitive: true });
 
 /**
  * @swagger
@@ -44,5 +44,5 @@ const router = express.Router();
  *                           type: string
  *                           description: 用户名称
  */
-router.get("/", getUserList);
+router.get("/", AdminUser.getUserList);
 export default router;

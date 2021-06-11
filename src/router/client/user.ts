@@ -1,24 +1,24 @@
-import express from "express";
-import { getUser } from "../../controllers/client/user";
-const router = express.Router();
+import { Router } from "express";
+import ClientUser from "../../controllers/client/user";
+const router: Router = Router({ caseSensitive: true });
 
 /**
  * @swagger
  *
- * /client/user/getUser:
+ * /client/user/weappLogin:
  *   get:
- *     summary: 获取用户信息
- *     description: 根据Token获取用户信息
+ *     summary: 小程序登录
+ *     description: 根据微信Code登录
  *     tags:
  *       - name: Client
  *         description: 用户管理
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: token
- *         description: auth token.
- *         in: header
- *         required: false
+ *       - name: code
+ *         description: 微信登录code
+ *         in: param
+ *         required: true
  *         type: string
  *     responses:
  *       200:
@@ -39,5 +39,5 @@ const router = express.Router();
  *                           type: string
  *                           description: 用户名称
  */
-router.get("/getUser", getUser);
+router.get("/weappLogin", ClientUser.weappLogin);
 export default router;

@@ -1,4 +1,5 @@
-import logger from "./logger";
+import { DBInterface, EnvInterface } from "../interface/config.interface";
+import logger from "../utils/logger";
 import dotenv from "dotenv";
 import fs from "fs";
 
@@ -10,9 +11,9 @@ if (fs.existsSync(".env")) {
     dotenv.config({ path: `.env.${ENVNAME}` });
 }
 
-export const ENVIRONMENT = process.env["NODE_ENV"];
-export const SESSION_SECRET = process.env["SESSION_SECRET"];
-export const MONGODB_URI = process.env["MONGODB_URI"];
+const ENVIRONMENT = process.env["NODE_ENV"];
+const SESSION_SECRET = process.env["SESSION_SECRET"];
+const MONGODB_URI = process.env["MONGODB_URI"];
 
 console.log("启动环境：", ENVIRONMENT);
 if (!SESSION_SECRET) {
@@ -26,3 +27,13 @@ if (!MONGODB_URI) {
   );
   process.exit(1);
 }
+
+export const EnvConfig: EnvInterface = {
+  PORT: (process.env.PORT || 3000) as number,
+  NODE_ENV: ENVIRONMENT,
+};
+
+export const DBConfig: DBInterface = {
+  MONGODB_URI,
+  SESSION_SECRET,
+};

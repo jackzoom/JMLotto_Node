@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { NextFunction } from "express";
 
 export type UserDocument = mongoose.Document & {
+  userId: string;
   openId: string;
   avatarUrl: string;
   nickName: string;
@@ -29,6 +30,7 @@ type comparePasswordFunction = (
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
+    userId: { type: String, unique: true },
     openId: { type: String, unique: true },
     avatarUrl: String,
     nickName: String,

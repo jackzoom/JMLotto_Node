@@ -1,19 +1,20 @@
+import {
+  ResponseCatch,
+  ResponseError,
+  ResponseSuccess,
+} from "../utils/response";
 import { Response } from "express";
+
 /**
- * Base Controller
+ * 基础类
  */
-
-interface R {
-  errorCode: string | number;
-  errorMsg: string;
-  data?: any;
+export default class Base {
+  ResponseCatch: any;
+  ResponseError: any;
+  ResponseSuccess: (res: Response, data?: any) => any;
+  constructor() {
+    this.ResponseCatch = ResponseCatch;
+    this.ResponseError = ResponseError;
+    this.ResponseSuccess = ResponseSuccess;
+  }
 }
-
-export const ResponseHandle = (res: Response, data?: any) => {
-  let result: R = {
-    errorCode: "0000",
-    errorMsg: "success",
-    data,
-  };
-  res.json(result);
-};

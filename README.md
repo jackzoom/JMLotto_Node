@@ -1,4 +1,5 @@
 # JMLotto Node Server
+
 This project is for practice use only
 
 # Table of Contents
@@ -8,21 +9,23 @@ This project is for practice use only
 - [Dependencies](#dependencies)
 - [Supports](#supports)
   - [Client](#client)
+- [Reference](#reference)
 
 # Dependencies
-| Package                         | Description                                                           |
-| ------------------------------- | --------------------------------------------------------------------- |
-| express                         | Node.js web framework                                                 |
-| errorhandler                    | Express 4 middleware.                                                 |
-| mongoose                        | MongoDB ODM.                                                          |
-| request                         | Simplified HTTP request library.                                      |
-| request-promise                 | Promisified HTTP request library. Let's us use async/await            |
-| winston                         | Logging library                                                       |
+
+| Package         | Description                                                |
+| --------------- | ---------------------------------------------------------- |
+| express         | Node.js web framework                                      |
+| errorhandler    | Express 4 middleware.                                      |
+| mongoose        | MongoDB ODM.                                               |
+| request         | Simplified HTTP request library.                           |
+| request-promise | Promisified HTTP request library. Let's us use async/await |
+| winston         | Logging library                                            |
 
 # Supports
 
-
 ## Client
 
+# Reference
 
-
+- [express-ts](https://gitee.com/rajan_admin/express-ts)

@@ -1,20 +1,20 @@
-import express from "express";
+import express, { Application } from "express";
 import session from "express-session";
 import lusca from "lusca";
 import MongoStore from "connect-mongo";
 import path from "path";
 import mongoose from "mongoose";
 import bluebird from "bluebird";
-import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
+import { DBConfig } from "./config";
 import router from "./router";
-import swaggerJSDoc from "swagger-jsdoc";
+import swaggerServer from "./utils/swagger";
 
 // Create Express server
-const app = express();
+const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-const mongoUrl = MONGODB_URI;
+const mongoUrl = DBConfig.MONGODB_URI;
 mongoose.Promise = bluebird;
 
 mongoose
@@ -41,7 +41,7 @@ app.use(
   session({
     resave: true,
     saveUninitialized: true,
-    secret: SESSION_SECRET,
+    secret: DBConfig.SESSION_SECRET,
     store: new MongoStore({
       mongoUrl,
       mongoOptions: {
@@ -53,42 +53,33 @@ app.use(
 );
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
+app.all("*", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  //
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Content-Length, Authorization, Accept, X-Requested-With"
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, PATCH, GET, DELETE, OPTIONS"
+  );
 
-const options: swaggerJSDoc.OAS3Options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "JMLotto",
-      description: "API Service",
-      version: "1.0.0",
-    },
-    servers: [
-      {
-        url: `${process.env.SERVER_URL}/api/v1`,
-        description: "本地",
-      },
-      {
-        url: `https://lotto.jackzoom.top/api/v1`,
-        description: "正式",
-      },
-    ],
-  },
-  apis: [
-    path.join(__dirname, "./router/*.ts"),
-    path.join(__dirname, "./router/*/*.ts"),
-  ],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-// prettier-ignore
-app.get('/swagger.json', function(req, res) {
-  res.setHeader('Content-Type','application/json');
-  res.send(swaggerSpec);
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
-router(app)
+// Swagger Service
+swaggerServer(app);
 
+// Register Api Router
+router(app);
+
+// Add static resource directories
 app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
