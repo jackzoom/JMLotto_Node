@@ -1,6 +1,6 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
-import Base from "../base";
-import { User } from "../../models/user";
+import Base from "../base.controller";
+import { User } from "../../models/user.model";
 
 export default new (class AdminUser extends Base {
   constructor() {
@@ -9,7 +9,7 @@ export default new (class AdminUser extends Base {
   }
 
   /**
-   * Weapp Login
+   * 小程序登录 Weapp Login
    * @route client/user/weappLogin
    * @param req
    * @param res
@@ -22,7 +22,6 @@ export default new (class AdminUser extends Base {
     //  - 不存在
     //    - 注册用户
     //    - 返回用户信息
-
     User.findOne({
       openId: "mock openId",
     }).then((data) => {

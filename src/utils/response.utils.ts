@@ -3,7 +3,7 @@ import {
   HttpResponse,
   HttpResponseException,
 } from "../interface/response.interface";
-import logger from "../utils/logger";
+import logger from "./logger";
 
 /**
  * Response Success
@@ -24,17 +24,15 @@ export const ResponseSuccess = (res: Response, data?: any) => {
 /**
  * Response Server Error
  * @param res
- * @statusCode 500
+ * @statusCode 200
  */
 export const ResponseError = (res: Response, error?: HttpResponseException) => {
   let result: HttpResponse = {
     errorCode: "0001",
     errorMsg: error.message,
   };
-  res.status(500);
+  res.status(200);
   res.send(result);
-  //Log Error Strack
-  logger.error(error);
 };
 
 /**
@@ -49,4 +47,6 @@ export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
   };
   res.status(500);
   res.send(result);
+  //Log Error Strack
+  logger.error(error);
 };

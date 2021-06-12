@@ -1,5 +1,5 @@
 import { Router } from "express";
-import AdminUser from "../../controllers/admin/user";
+import AdminUser from "../../controllers/admin/user.controller";
 const router: Router = Router({ caseSensitive: true });
 
 /**

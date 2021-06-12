@@ -5,13 +5,13 @@ import MongoStore from "connect-mongo";
 import path from "path";
 import mongoose from "mongoose";
 import bluebird from "bluebird";
-import { DBConfig } from "./config";
+import { DBConfig, EnvConfig } from "./config/server.config";
 import router from "./router";
 import swaggerServer from "./utils/swagger";
 
 // Create Express server
 const app: Application = express();
-const PORT = process.env.PORT || 3000;
+const PORT = EnvConfig.PORT;
 
 // Connect to MongoDB
 const mongoUrl = DBConfig.MONGODB_URI;

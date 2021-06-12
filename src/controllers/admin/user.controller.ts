@@ -1,6 +1,6 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
-import Base from "../base";
-import { User, UserDocument } from "../../models/user";
+import Base from "../base.controller";
+import { User } from "../../models/user.model";
 
 export default new (class AdminUser extends Base {
   constructor() {
