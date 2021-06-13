@@ -12,5 +12,6 @@ export interface HttpResponse {
  */
 export interface HttpResponseException {
   message: string;
+  code?: string | number;
   stack?: string;
 }

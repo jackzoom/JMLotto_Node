@@ -49,5 +49,5 @@ const router: Router = Router({ caseSensitive: true });
  *                           type: string
  *                           description: 用户名称
  */
-router.get("/weappLogin", ClientUser.weappLogin);
+router.post("/weappLogin", ClientUser.weappLogin);
 export default router;

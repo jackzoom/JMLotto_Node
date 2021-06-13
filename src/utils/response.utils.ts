@@ -24,25 +24,32 @@ export const ResponseSuccess = (res: Response, data?: any) => {
 /**
  * Response Server Error
  * @param res
- * @statusCode 200
+ * @param error
+ * @param statusCode
+ * @default 200
  */
-export const ResponseError = (res: Response, error?: HttpResponseException) => {
+export const ResponseError = (
+  res: Response,
+  error?: HttpResponseException,
+  statusCode?: number
+) => {
   let result: HttpResponse = {
-    errorCode: "0001",
+    errorCode: error.code || "0001",
     errorMsg: error.message,
   };
-  res.status(200);
+  res.status(statusCode || 200);
   res.send(result);
 };
 
 /**
  * Response Server Catch
  * @param res
+ * @param error
  * @statusCode 500
  */
 export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
   let result: HttpResponse = {
-    errorCode: "0001",
+    errorCode: error.code || "0001",
     errorMsg: error.message,
   };
   res.status(500);

@@ -22,11 +22,6 @@ export default new (class AdminUser extends Base {
     //  - 不存在
     //    - 注册用户
     //    - 返回用户信息
-    User.findOne({
-      openId: "mock openId",
-    }).then((data) => {
-      console.log("微信Code登录：", data);
-      this.ResponseSuccess(res, data);
-    });
+    this.ResponseSuccess(res);
   }
 })();

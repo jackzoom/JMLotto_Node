@@ -8,6 +8,7 @@ import bluebird from "bluebird";
 import { DBConfig, EnvConfig } from "./config/server.config";
 import router from "./router";
 import swaggerServer from "./utils/swagger";
+import logger from "./utils/logger";
 
 // Create Express server
 const app: Application = express();
@@ -27,7 +28,7 @@ mongoose
     /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
   })
   .catch((err: any) => {
-    console.log(
+    logger.error(
       `MongoDB connection error. Please make sure MongoDB is running. ${err}`
     );
     // process.exit();

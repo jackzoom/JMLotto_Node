@@ -46,8 +46,11 @@ const userSchema = new mongoose.Schema<UserDocument>(
     account: { type: String, unique: true },
     password: String,
     lastLogin: Date,
-    createTime: Date,
-    parentId: String,
+    createTime: { type: Date, default: Date.now },
+    parentId: {
+      type: String,
+      default: 0
+    },
   },
   { timestamps: true }
 );

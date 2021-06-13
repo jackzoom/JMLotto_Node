@@ -11,6 +11,11 @@ const options: winston.LoggerOptions = {
       filename: path.resolve(__dirname, "../logs/info.log"),
       level: "info",
     }),
+    //error级别的保存在error.log文件中
+    new winston.transports.File({
+      filename: path.resolve(__dirname, "../logs/error.log"),
+      level: "error",      
+    }),
     //debug级别的保存在debug.log文件中
     new winston.transports.File({
       filename: path.resolve(__dirname, "../logs/debug.log"),
