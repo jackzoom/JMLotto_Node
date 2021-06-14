@@ -1,28 +1,28 @@
 import { Router } from "express";
-import AdminUser from "../../controllers/admin/user.controller";
+import AdminAuth from "../../controllers/admin/auth.controller";
 const router: Router = Router({ caseSensitive: true });
 
 /**
  * @swagger
  *
- * /admin/user:
- *   get:
- *     summary: 获取用户列表
- *     description: 获取用户列表
+ * /admin/auth/login:
+ *   post:
+ *     summary: 管理员登录
+ *     description: 管理员登录
  *     tags:
  *       - name: Admin
- *         description: 用户管理
+ *         description: 登录
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: token
- *         description: auth token.
- *         in: header
- *         required: false
+ *       - name: account
+ *         description: 账户名
+ *         in: body
+ *         required: true
  *         type: string
- *       - name: userId
- *         description: 用户编号
- *         in: query
+ *       - name: password
+ *         description: 密码
+ *         in: body
  *         required: true
  *         type: string
  *     responses:
@@ -44,6 +44,6 @@ const router: Router = Router({ caseSensitive: true });
  *                           type: string
  *                           description: 用户名称
  */
-router.get("/", AdminUser.getUserList);
+router.post("/login", AdminAuth.adminLogin);
 
 export default router;

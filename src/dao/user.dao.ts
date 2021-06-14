@@ -1,25 +1,52 @@
 import { User, UserDocument } from "../models/user.model";
-import {Query} from "mongoose"
 
 interface DBI<T> {
-    getUser(userId: string): object,
-    addUser(userInfo: T): string,
-    updateUser(userId: string, userInfo: T): object,
-    deleteUser(userId: string): boolean,
+  getUserById(userId: string): Promise<UserDocument>;
+  getUserByAccount(account: string, password: string): Promise<UserDocument>;
+  addUser(userInfo: object): Promise<UserDocument>;
+  updateUser(userId: string, userInfo: T): Promise<UserDocument>;
+  deleteUser(userId: string): Promise<UserDocument>;
 }
 
-export default class UserDao<T> implements DBI<T> {
-    getUser(userId: string): object {
-        throw new Error("Method not implemented.");
-    }
-    addUser(userInfo: T): string {
-        throw new Error("Method not implemented.");
-    }
-    updateUser(userId: string, userInfo: T): object {
-        throw new Error("Method not implemented.");
-    }
-    deleteUser(userId: string): boolean {
-        throw new Error("Method not implemented.");
-    }
-
+interface UserInterface {
+  openId: string;
+  nickName?: string;
+  avatarUrl?: string;
+  gender?: number;
+  country?: string;
+  province?: string;
+  city?: string;
+  language?: string;
+  unionId?: string;
+  phoneNumber?: number;
+  countryCode?: number;
+  password?: string;
+  sessionKey?: string;
+  lastLogin?: Date;
+  createTime?: Date;
+  parentId?: string;
 }
+
+export default new (class UserDao<T> implements DBI<T> {
+  getUserById(userId: string): any {
+    return User.findById({
+      _id: userId,
+    });
+  }
+  getUserByAccount(account: string, password: string): any {
+    return User.findOne({
+      account,
+      password,
+    });
+  }
+  addUser(userInfo: UserInterface): Promise<UserDocument> {
+    let UserModel = new User(userInfo);
+    return UserModel.save();
+  }
+  updateUser(userId: string, userInfo: T): Promise<UserDocument> {
+    throw new Error("Method not implemented.");
+  }
+  deleteUser(userId: string): Promise<UserDocument> {
+    throw new Error("Method not implemented.");
+  }
+})();

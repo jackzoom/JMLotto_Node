@@ -10,7 +10,7 @@ import User from "./user.router";
  *      Basic:
  *        properties:
  *          errorCode:
- *            type: integer
+ *            type: string
  *            description: 状态码
  *          errorMsg:
  *            type: string

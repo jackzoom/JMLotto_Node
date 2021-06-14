@@ -1,6 +1,6 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
 import Base from "../base.controller";
-import { User } from "../../models/user.model";
+import UserDao from "../../dao/user.dao";
 
 export default new (class AdminUser extends Base {
   constructor() {
@@ -22,6 +22,15 @@ export default new (class AdminUser extends Base {
     //  - 不存在
     //    - 注册用户
     //    - 返回用户信息
-    this.ResponseSuccess(res);
+    let userDoc = {
+      openId: Number(
+        Math.random().toString().substr(3, 6) + +Date.now()
+      ).toString(16),
+    };
+    UserDao.addUser({
+      ...userDoc,
+    }).then((userRes) => {
+      this.ResponseSuccess(res, { userDoc, userRes });
+    });
   }
 })();

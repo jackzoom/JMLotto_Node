@@ -17,8 +17,7 @@ export const ResponseSuccess = (res: Response, data?: any) => {
     errorMsg: "success",
     data,
   };
-  res.status(200);
-  res.json(result);
+  res.status(200).json(result);
 };
 
 /**
@@ -37,8 +36,7 @@ export const ResponseError = (
     errorCode: error.code || "0001",
     errorMsg: error.message,
   };
-  res.status(statusCode || 200);
-  res.send(result);
+  res.status(statusCode || 200).send(result);
 };
 
 /**
@@ -52,8 +50,7 @@ export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
     errorCode: error.code || "0001",
     errorMsg: error.message,
   };
-  res.status(500);
-  res.send(result);
+  res.status(500).send(result);
   //Log Error Strack
   logger.error(error);
 };

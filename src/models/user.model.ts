@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import { NextFunction } from "express";
 
 export type UserDocument = mongoose.Document & {
-  userId: string;
   openId: string;
   avatarUrl: string;
   nickName: string;
@@ -18,7 +17,6 @@ export type UserDocument = mongoose.Document & {
   password: string;
   sessionKey: string;
   lastLogin: Date;
-  createTime: Date;
   parentId: string;
   comparePassword: comparePasswordFunction;
 };
@@ -30,26 +28,24 @@ type comparePasswordFunction = (
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
-    userId: { type: String, unique: true },
     openId: { type: String, unique: true },
     avatarUrl: String,
     nickName: String,
-    gender: Number,
+    gender: { type: Number, default: 0, enum: [0, 1, 2] },
     country: String,
     province: String,
     city: String,
     language: String,
-    unionId: { type: String, unique: true },
-    phoneNumber: { type: Number, unique: true },
+    unionId: { type: String, unique: true, sparse: true },
+    phoneNumber: { type: Number, unique: true, sparse: true },
     countryCode: Number,
     sessionKey: String,
-    account: { type: String, unique: true },
+    account: { type: String, unique: true, sparse: true },
     password: String,
     lastLogin: Date,
-    createTime: { type: Date, default: Date.now },
     parentId: {
       type: String,
-      default: 0
+      default: 0,
     },
   },
   { timestamps: true }

@@ -3,6 +3,7 @@
  */
 export const ApiWhiteList = [
     '/client/user/weappLogin',
+    '/admin/auth/login',
 ];
 
 /**

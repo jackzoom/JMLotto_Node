@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router: Router = Router({ caseSensitive: true });
 import User from "./user.router";
+import Auth from "./Auth.router";
 
 /**
  * @swagger
@@ -10,12 +11,13 @@ import User from "./user.router";
  *      Basic:
  *        properties:
  *          errorCode:
- *            type: integer
+ *            type: string
  *            description: 状态码
  *          errorMsg:
  *            type: string
  *            description: 错误消息
  */
 router.use("/user", User);
+router.use("/auth", Auth);
 
 export default router;
