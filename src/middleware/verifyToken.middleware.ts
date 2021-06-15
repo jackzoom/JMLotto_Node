@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
 import { Request, NextFunction } from "express";
 import { ResponseError } from "../utils/response.utils";
-import { ApiHeaderKey, ApiJWTSecretKey } from "../config/api.config";
+import { ApiHeaderKey } from "../config/api.config";
 import { EnvConfig } from "../config/server.config";
+import { VerifyToken } from "../utils/token";
 
 export default function verifyToken(prefix: string, whiteList: Array<string>) {
   return async (req: Request, res: any, next: NextFunction) => {
@@ -13,9 +13,10 @@ export default function verifyToken(prefix: string, whiteList: Array<string>) {
     )
       return await next();
     try {
-      const token = req.headers[ApiHeaderKey];
-      const user = jwt.verify(token as string, ApiJWTSecretKey);
-      res.user = user;
+      const token = req.headers[ApiHeaderKey] as string;
+      const user = await VerifyToken(token);
+      console.log("verifyToken：", user);
+      res.authUser = user;
       await next();
     } catch ({ name, message }) {
       let errorMsg = "访问无权限";

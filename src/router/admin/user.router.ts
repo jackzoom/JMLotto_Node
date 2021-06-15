@@ -20,11 +20,6 @@ const router: Router = Router({ caseSensitive: true });
  *         in: header
  *         required: false
  *         type: string
- *       - name: userId
- *         description: 用户编号
- *         in: query
- *         required: true
- *         type: string
  *     responses:
  *       200:
  *         description: success

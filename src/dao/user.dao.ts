@@ -2,7 +2,11 @@ import { User, UserDocument } from "../models/user.model";
 
 interface DBI<T> {
   getUserById(userId: string): Promise<UserDocument>;
-  getUserByAccount(account: string, password: string): Promise<UserDocument>;
+  getUserByAccount(
+    account: string,
+    password: string,
+    isAdmin: number
+  ): Promise<UserDocument>;
   addUser(userInfo: object): Promise<UserDocument>;
   updateUser(userId: string, userInfo: T): Promise<UserDocument>;
   deleteUser(userId: string): Promise<UserDocument>;
@@ -33,10 +37,15 @@ export default new (class UserDao<T> implements DBI<T> {
       _id: userId,
     });
   }
-  getUserByAccount(account: string, password: string): any {
+  getUserByAccount(
+    account: string,
+    password: string,
+    isAdmin: number = 0
+  ): any {
     return User.findOne({
       account,
       password,
+      isAdmin,
     });
   }
   addUser(userInfo: UserInterface): Promise<UserDocument> {

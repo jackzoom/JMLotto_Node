@@ -1,7 +1,9 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
 import Base from "../base.controller";
 import UserDao from "../../dao/user.dao";
-import { check } from "express-validator";
+import { SignToken } from "../../utils/token";
+import { AdminLogin } from "../../config/scope.config";
+import { UserDocument } from "../../models/user.model";
 
 export default new (class AdminUser extends Base {
   constructor() {
@@ -17,16 +19,23 @@ export default new (class AdminUser extends Base {
    * @param res
    */
   async adminLogin(req: Request, res: Response) {
-    console.log(req.body);
-    await check("account", "请输入账户名").not().isEmpty().run(req);
-    await check("password", "请输入密码").not().isEmpty().run(req);
-    let { account, password } = req.body;  
-    UserDao.getUserByAccount(account, password).then((userRes: any) => {
-      if (!userRes)
-        return this.ResponseError(res, {
-          message: "账户密码验证错误",
+    let { account, password } = req.body;
+    UserDao.getUserByAccount(account, password, 1).then(
+      (userRes: UserDocument) => {
+        if (!userRes)
+          return this.ResponseError(res, {
+            message: "账户密码验证错误",
+          });
+        let token = SignToken({
+          userId: userRes._id,
+          scope: AdminLogin,
         });
-      this.ResponseSuccess(res, userRes);
-    });
+
+        this.ResponseSuccess(res, {
+          nickName: userRes.nickName,
+          token,
+        });
+      }
+    );
   }
 })();

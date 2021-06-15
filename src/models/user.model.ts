@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt-nodejs";
 import mongoose from "mongoose";
 import { NextFunction } from "express";
+import { formatTime } from "../utils";
 
 export type UserDocument = mongoose.Document & {
   openId: string;
@@ -18,6 +19,7 @@ export type UserDocument = mongoose.Document & {
   sessionKey: string;
   lastLogin: Date;
   parentId: string;
+  isAdmin: number;
   comparePassword: comparePasswordFunction;
 };
 
@@ -28,7 +30,7 @@ type comparePasswordFunction = (
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
-    openId: { type: String, unique: true },
+    openId: { type: String, unique: true, sparse: true },
     avatarUrl: String,
     nickName: String,
     gender: { type: Number, default: 0, enum: [0, 1, 2] },
@@ -40,15 +42,34 @@ const userSchema = new mongoose.Schema<UserDocument>(
     phoneNumber: { type: Number, unique: true, sparse: true },
     countryCode: Number,
     sessionKey: String,
-    account: { type: String, unique: true, sparse: true },
-    password: String,
+    account: { type: String, unique: true, sparse: true, select: false },
+    password: {
+      type: String,
+      select: false,
+    },
     lastLogin: Date,
     parentId: {
       type: String,
       default: 0,
     },
+    isAdmin: {
+      type: Number,
+      default: 0,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      transform: function (doc, ret, options) {
+        ret.userId = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        ret.createdAt && (ret.createdAt = formatTime(ret.createdAt));
+        ret.updatedAt && (ret.updatedAt = formatTime(ret.updatedAt));
+        return ret;
+      },
+    },
+  }
 );
 
 /**

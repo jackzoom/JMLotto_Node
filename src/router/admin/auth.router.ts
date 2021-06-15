@@ -5,6 +5,19 @@ const router: Router = Router({ caseSensitive: true });
 /**
  * @swagger
  *
+ * definitions:
+ *  loginParam:
+ *      description: Login Params
+ *      properties:
+ *          account:
+ *              type: string
+ *          password:
+ *              type: string
+ */
+
+/**
+ * @swagger
+ *
  * /admin/auth/login:
  *   post:
  *     summary: 管理员登录
@@ -14,17 +27,13 @@ const router: Router = Router({ caseSensitive: true });
  *         description: 登录
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: account
- *         description: 账户名
- *         in: body
- *         required: true
- *         type: string
- *       - name: password
- *         description: 密码
- *         in: body
- *         required: true
- *         type: string
+ *     requestBody:
+ *       required: true
+ *       name: body
+ *       content:
+ *         application/json:
+ *            schema:
+ *              $ref: '#/definitions/loginParam'
  *     responses:
  *       200:
  *         description: success

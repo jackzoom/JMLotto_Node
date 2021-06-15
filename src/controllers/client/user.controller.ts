@@ -1,6 +1,8 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
 import Base from "../base.controller";
 import UserDao from "../../dao/user.dao";
+import { SignToken } from "../../utils/token";
+import { AppletLogin } from "../../config/scope.config";
 
 export default new (class AdminUser extends Base {
   constructor() {
@@ -29,8 +31,12 @@ export default new (class AdminUser extends Base {
     };
     UserDao.addUser({
       ...userDoc,
-    }).then((userRes) => {
-      this.ResponseSuccess(res, { userDoc, userRes });
+    }).then((userRes: any) => {
+      let token = SignToken({
+        userId: userRes.userId,
+        scope: AppletLogin,
+      });
+      this.ResponseSuccess(res, { ...userRes, token });
     });
   }
 })();
