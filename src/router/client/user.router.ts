@@ -5,6 +5,21 @@ const router: Router = Router({ caseSensitive: true });
 /**
  * @swagger
  *
+ * definitions:
+ *  weappLoginParam:
+ *      description: Login Params
+ *      properties:
+ *          code:
+ *              type: string
+ *          encryptedData:
+ *              type: string
+ *          iv:
+ *              type: string
+ */
+
+/**
+ * @swagger
+ *
  * /client/user/weappLogin:
  *   post:
  *     summary: 小程序登录
@@ -14,22 +29,13 @@ const router: Router = Router({ caseSensitive: true });
  *         description: 用户管理
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: code
- *         description: 微信登录code
- *         in: param
- *         required: true
- *         type: string
- *       - name: encryptedData
- *         description: 完整用户信息的加密数据
- *         in: param
- *         required: true
- *         type: string
- *       - name: iv
- *         description: 加密算法的初始向量
- *         in: param
- *         required: true
- *         type: string
+ *     requestBody:
+ *       required: true
+ *       name: body
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/definitions/weappLoginParam'
  *     responses:
  *       200:
  *         description: success

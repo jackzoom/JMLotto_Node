@@ -32,8 +32,8 @@ const router: Router = Router({ caseSensitive: true });
  *       name: body
  *       content:
  *         application/json:
- *            schema:
- *              $ref: '#/definitions/loginParam'
+ *           schema:
+ *             $ref: '#/definitions/loginParam'
  *     responses:
  *       200:
  *         description: success
