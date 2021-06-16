@@ -2,9 +2,10 @@ import { Router } from "express";
 import ClientUser from "../../controllers/client/user.controller";
 const router: Router = Router({ caseSensitive: true });
 
+
 /**
  * @swagger
- *
+ * 
  * definitions:
  *  weappLoginParam:
  *      description: Login Params
@@ -15,11 +16,7 @@ const router: Router = Router({ caseSensitive: true });
  *              type: string
  *          iv:
  *              type: string
- */
-
-/**
- * @swagger
- *
+ * 
  * /client/user/weappLogin:
  *   post:
  *     summary: 小程序登录
@@ -56,6 +53,52 @@ const router: Router = Router({ caseSensitive: true });
  *                           description: 用户名称
  */
 router.post("/weappLogin", ClientUser.weappLogin);
+
+/**
+ * @swagger
+ * 
+ * definitions:
+ *   AccountLogin:
+ *     properties:
+ *       account:
+ *        type: string
+ *       password:
+ *        type: string
+ *
+ * /client/user/accountLogin:
+ *   post:
+ *     summary: 账户登录
+ *     description: 账户密码登录
+ *     tags:
+ *       - name: Client
+ *         description: 用户管理
+ *     requestBody:
+ *       required: true
+ *       name: body
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/definitions/AccountLogin'
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Basic'
+ *                 - properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         userId:
+ *                           type: integer
+ *                           description: 用户编号
+ *                         userName:
+ *                           type: string
+ *                           description: 用户名称
+ */
+ router.post("/accountLogin", ClientUser.accountLogin);
 
 /**
  * @swagger

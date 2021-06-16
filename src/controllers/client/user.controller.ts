@@ -8,19 +8,22 @@ import { ApiWxAppletAppID, ApiWxAppletSecret } from "../../config/api.config";
 import {  
   JwtAuthResponse,
 } from "../../interface/auth.interface";
+import { UserDocument } from "../../models/user.model";
 
 export default new (class AdminUser extends Base {
   constructor() {
     super();
     this.weappLogin = this.weappLogin.bind(this);
+    this.accountLogin = this.accountLogin.bind(this);
     this.getUser = this.getUser.bind(this);
   }
 
   /**
    * 小程序登录 Weapp Login
    * @route client/user/weappLogin
-   * @param req
-   * @param res
+   * @param code
+   * @param iv 微信声明
+   * @param encryptedData 微信加密数据
    */
   async weappLogin(req: Request, res: Response): Promise<void> {
     //1.根据Code换取小程序OpenId
@@ -61,11 +64,41 @@ export default new (class AdminUser extends Base {
   }
 
   /**
-   * 获取用户信息
+   * 账户密码登录
+   * @route POST /client/user/accountLogin
    * @param req
    * @param res
    */
+   async accountLogin(req: Request, res: Response) {
+    let { account, password } = req.body;
+    UserDao.getUserByAccount(account, password, 0).then(
+      (userRes: UserDocument) => {
+        if (!userRes)
+          return this.ResponseError(res, {
+            message: "账户密码验证错误",
+          });
+        let token = SignToken({
+          userId: userRes._id,
+          scope: AppletLogin,
+        });
+
+        this.ResponseSuccess(res, {
+          nickName: userRes.nickName,
+          token,
+        });
+      }
+    );
+   }
+
+  /**
+   * 获取用户信息
+   * @route /client/user/getUser
+   * @header token
+   */
   async getUser(req: Request, res: JwtAuthResponse): Promise<void> {
-    this.ResponseSuccess(res, res.authUser);
+    UserDao.getUserById(res.authUser.userId).then((doc:object)=>{
+      this.ResponseSuccess(res, doc);
+    })
+    
   }
 })();

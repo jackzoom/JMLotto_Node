@@ -15,3 +15,14 @@ export function isDebug(): Boolean {
 export function formatTime(time: Date): String {
   return moment(time).format("YYYY-MM-DD HH:mm:SS");
 }
+
+/**
+ * 生产一个唯一的GUID
+ * @returns guid
+ */
+export function getGUID(): string {
+  function S4() {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+}
+  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}

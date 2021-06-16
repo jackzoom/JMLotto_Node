@@ -8,7 +8,7 @@ import { UserDocument } from "../../models/user.model";
 export default new (class AdminUser extends Base {
   constructor() {
     super();
-    this.adminLogin = this.adminLogin.bind(this);
+    this.adminLogin = this.adminLogin.bind(this);    
   }
 
   /**

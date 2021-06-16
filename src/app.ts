@@ -52,7 +52,7 @@ app.use(
     }),
   })
 );
-app.use(lusca.xframe("SAMEORIGIN"));
+app.use(lusca.xframe("jmlotto"));
 app.use(lusca.xssProtection(true));
 app.all("*", (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
