@@ -1,15 +1,19 @@
-import { Request, Response } from "express"; // express 申明文件定义的类型
+import { Request, Response } from "express";
 import HTTP from "request-promise";
 import Base from "../base.controller";
 import UserDao from "../../dao/user.dao";
 import { SignToken } from "../../utils/token";
 import { AppletLogin } from "../../config/scope.config";
 import { ApiWxAppletAppID, ApiWxAppletSecret } from "../../config/api.config";
+import {  
+  JwtAuthResponse,
+} from "../../interface/auth.interface";
 
 export default new (class AdminUser extends Base {
   constructor() {
     super();
     this.weappLogin = this.weappLogin.bind(this);
+    this.getUser = this.getUser.bind(this);
   }
 
   /**
@@ -18,7 +22,7 @@ export default new (class AdminUser extends Base {
    * @param req
    * @param res
    */
-  async weappLogin(req: Request, res: Response) {
+  async weappLogin(req: Request, res: Response): Promise<void> {
     //1.根据Code换取小程序OpenId
     //2.查询OpenId是否存在
     //  - 存在
@@ -54,5 +58,14 @@ export default new (class AdminUser extends Base {
       .catch((err) => {
         this.ResponseError(res, err);
       });
+  }
+
+  /**
+   * 获取用户信息
+   * @param req
+   * @param res
+   */
+  async getUser(req: Request, res: JwtAuthResponse): Promise<void> {
+    this.ResponseSuccess(res, res.authUser);
   }
 })();

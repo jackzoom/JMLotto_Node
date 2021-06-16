@@ -32,7 +32,10 @@ export const SignToken = (data: object | SignData, expiresIn = 60 * 60 * 2) => {
  * @param {String} scope 应用范围
  * @description scope：管理员享有所有权限
  */
-export const VerifyToken = async (token: string, scope?: string) => {
+export const VerifyToken = async (
+  token: string,
+  scope?: string
+): Promise<Object> => {
   return new Promise((resolve, reject) => {
     try {
       let result = {

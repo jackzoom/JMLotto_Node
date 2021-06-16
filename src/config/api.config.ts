@@ -1,7 +1,7 @@
 /**
  * Api Token White List
  */
-export const ApiWhiteList = ["/client/user/weappLogin", "/admin/auth/login"];
+export const ApiWhiteList = ["/user/weappLogin", "/auth/login"];
 
 /**
  * API Header Token Attribute

@@ -3,19 +3,25 @@ import { ResponseError } from "../utils/response.utils";
 import { ApiHeaderKey } from "../config/api.config";
 import { EnvConfig } from "../config/server.config";
 import { VerifyToken } from "../utils/token";
+import { JwtAuthResponse } from "../interface/auth.interface";
 
-export default function verifyToken(prefix: string, whiteList: Array<string>) {
-  return async (req: Request, res: any, next: NextFunction) => {
+export default function verifyToken(whiteList: Array<string>, scope?: string) {
+  return async (req: Request, res: JwtAuthResponse, next: NextFunction) => {
     let { path } = req;
-    if (
-      path.indexOf(prefix) < 0 ||
-      whiteList.includes(path.replace(prefix, ""))
-    )
-      return await next();
+    if (whiteList.includes(path)) return await next();
     try {
       const token = req.headers[ApiHeaderKey] as string;
-      const user = await VerifyToken(token);
-      console.log("verifyToken：", user);
+      const user = (await VerifyToken(token)) as any;
+      // console.log("verifyToken：", user);
+      if (user.scope !== scope) {
+        return ResponseError(
+          res,
+          {
+            message: "访问无权限",
+          },
+          401
+        );
+      }
       res.authUser = user;
       await next();
     } catch ({ name, message }) {
