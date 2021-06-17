@@ -1,7 +1,10 @@
 /**
  * Api Token White List
  */
-export const ApiWhiteList = [...["/user/weappLogin", "/user/accountLogin"], ...["/auth/login", "/user/insertTestUser"]];
+export const ApiWhiteList = [
+  ...["/user/weappLogin", "/user/accountLogin"],
+  ...["/auth/login", "/user/insertTestUser"],
+];
 
 /**
  * API Header Token Attribute
@@ -17,6 +20,14 @@ export const ApiJWTSecretKey = `JM_LOTTO`;
  * Api HTTP Code
  */
 export const ApiHttpCode = {
+  /**
+   * 请求成功
+   */
+  RequestSuccess: `0000`,
+  /**
+   * 请求失败
+   */
+  RequestFail: `0001`,
   /**
    * 未授权的请求
    */

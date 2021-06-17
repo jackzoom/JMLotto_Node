@@ -2,8 +2,12 @@ import { Response } from "express";
 import {
   HttpResponse,
   HttpResponseException,
+  HttpResponsePaging,
 } from "../interface/response.interface";
 import logger from "./logger";
+import { isDebug } from "../config/server.config";
+import { ApiHttpCode } from "../config/api.config";
+import { hasObjectValue } from "../utils";
 
 /**
  * Response Success
@@ -13,7 +17,7 @@ import logger from "./logger";
  */
 export const ResponseSuccess = (res: Response, data?: any) => {
   let result: HttpResponse = {
-    errorCode: "0000",
+    errorCode: ApiHttpCode.RequestSuccess,
     errorMsg: "success",
     data,
   };
@@ -33,9 +37,16 @@ export const ResponseError = (
   statusCode?: number
 ) => {
   let result: HttpResponse = {
-    errorCode: error.code || "0001",
+    errorCode: error.code || ApiHttpCode.RequestFail,
     errorMsg: error.message,
   };
+  if (!isDebug() && !hasObjectValue(ApiHttpCode, error.code)) {
+    //生产环境不抛代码异常message
+    result = {
+      errorCode: ApiHttpCode.RequestFail,
+      errorMsg: "服务无响应，请联系管理员",
+    };
+  }
   res.status(statusCode || 200).send(result);
 };
 
@@ -47,10 +58,21 @@ export const ResponseError = (
  */
 export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
   let result: HttpResponse = {
-    errorCode: error.code || "0001",
+    errorCode: error.code || ApiHttpCode.RequestFail,
     errorMsg: error.message,
   };
   res.status(500).send(result);
   //Log Error Strack
   logger.error(error);
+};
+
+export const ResponsePaging = () => {
+  let result: HttpResponsePaging = {
+    content: [],
+    currentPage: 0,
+    pageSize: 20,
+    totalElement: 0,
+    totalPages: 0,
+  };
+  return result;
 };

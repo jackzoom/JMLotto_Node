@@ -40,7 +40,7 @@ export const VerifyToken = async (
     try {
       let result = {
         code: ApiHttpCode.Unauthorized,
-        message: "无效的令牌",
+        message: "未授权的访问",
       };
       if (!token) return reject(result);
       jwt.verify(token, ApiJWTSecretKey, (error, decoded: SignData) => {
@@ -53,7 +53,7 @@ export const VerifyToken = async (
               result.message = "无效的令牌";
               break;
             default:
-              result.message = "无效的令牌";
+              result.message = "令牌验证失败";
               break;
           }
           reject(result);

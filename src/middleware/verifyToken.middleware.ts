@@ -1,7 +1,7 @@
 import { Request, NextFunction } from "express";
 import { ResponseError } from "../utils/response.utils";
-import { ApiHeaderKey } from "../config/api.config";
-import { EnvConfig } from "../config/server.config";
+import { ApiHeaderKey, ApiHttpCode } from "../config/api.config";
+import { isDebug } from "../config/server.config";
 import { VerifyToken } from "../utils/token";
 import { JwtAuthResponse } from "../interface/auth.interface";
 
@@ -19,7 +19,7 @@ export default function verifyToken(whiteList: Array<string>, scope?: string) {
           {
             message: "访问无权限",
           },
-          401
+          ApiHttpCode.AuthFail
         );
       }
       res.authUser = user;
@@ -31,14 +31,14 @@ export default function verifyToken(whiteList: Array<string>, scope?: string) {
       } else if (name === "JsonWebTokenError") {
         errorMsg = "无效的登录令牌";
       } else {
-        errorMsg = EnvConfig.NODE_ENV !== "production" ? message : errorMsg;
+        errorMsg = isDebug() ? message : errorMsg;
       }
       return ResponseError(
         res,
         {
           message: errorMsg,
         },
-        401
+        ApiHttpCode.Unauthorized
       );
     }
   };

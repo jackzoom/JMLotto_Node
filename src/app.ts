@@ -9,6 +9,7 @@ import { DBConfig, EnvConfig } from "./config/server.config";
 import router from "./router";
 import swaggerServer from "./utils/swagger";
 import logger from "./utils/logger";
+import "./schedule";
 
 // Create Express server
 const app: Application = express();

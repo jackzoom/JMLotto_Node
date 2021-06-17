@@ -15,3 +15,14 @@ export interface HttpResponseException {
   code?: string | number;
   stack?: string;
 }
+
+/**
+ * Response Pagin
+ */
+export interface HttpResponsePaging {
+  content: Array<Object>;
+  totalElement: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}

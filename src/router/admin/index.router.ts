@@ -16,6 +16,23 @@ import Auth from "./Auth.router";
  *          errorMsg:
  *            type: string
  *            description: 错误消息
+ *      Paging:
+ *        properties:
+ *          content:
+ *            type: array
+ *            description: 数据列表
+ *          currentPage:
+ *            type: number
+ *            description: 当前页码
+ *          pageSize:
+ *            type: number
+ *            description: 每页个数
+ *          totalPages:
+ *            type: number
+ *            description: 总页数
+ *          totalElement:
+ *            type: number
+ *            description: 总个数
  */
 router.use("/user", User);
 router.use("/auth", Auth);

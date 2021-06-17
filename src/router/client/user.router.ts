@@ -62,8 +62,10 @@ router.post("/weappLogin", ClientUser.weappLogin);
  *     properties:
  *       account:
  *        type: string
+ *        default: user
  *       password:
  *        type: string
+ *        default: user
  *
  * /client/user/accountLogin:
  *   post:

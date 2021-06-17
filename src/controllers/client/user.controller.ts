@@ -5,9 +5,7 @@ import UserDao from "../../dao/user.dao";
 import { SignToken } from "../../utils/token";
 import { AppletLogin } from "../../config/scope.config";
 import { ApiWxAppletAppID, ApiWxAppletSecret } from "../../config/api.config";
-import {  
-  JwtAuthResponse,
-} from "../../interface/auth.interface";
+import { JwtAuthResponse } from "../../interface/auth.interface";
 import { UserDocument } from "../../models/user.model";
 
 export default new (class AdminUser extends Base {
@@ -69,7 +67,7 @@ export default new (class AdminUser extends Base {
    * @param req
    * @param res
    */
-   async accountLogin(req: Request, res: Response) {
+  async accountLogin(req: Request, res: Response) {
     let { account, password } = req.body;
     UserDao.getUserByAccount(account, password, 0).then(
       (userRes: UserDocument) => {
@@ -88,7 +86,7 @@ export default new (class AdminUser extends Base {
         });
       }
     );
-   }
+  }
 
   /**
    * 获取用户信息
@@ -96,9 +94,8 @@ export default new (class AdminUser extends Base {
    * @header token
    */
   async getUser(req: Request, res: JwtAuthResponse): Promise<void> {
-    UserDao.getUserById(res.authUser.userId).then((doc:object)=>{
+    UserDao.getUserById(res.authUser.userId).then((doc: UserDocument) => {
       this.ResponseSuccess(res, doc);
-    })
-    
+    });
   }
 })();

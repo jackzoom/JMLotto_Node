@@ -32,6 +32,12 @@ export const EnvConfig: EnvInterface = {
   NODE_ENV: ENVIRONMENT,
 };
 
+/**
+ * 当前环境是否为开发模式
+ * @returns `true | false`
+ */
+export const isDebug = (): boolean => ENVIRONMENT !== "production";
+
 export const DBConfig: DBInterface = {
   MONGODB_URI,
   SESSION_SECRET,

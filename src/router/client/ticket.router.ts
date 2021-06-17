@@ -1,37 +1,48 @@
 import { Router } from "express";
-import AdminAuth from "../../controllers/admin/auth.controller";
+import ClientTicket from "../../controllers/client/ticket.controller";
 const router: Router = Router({ caseSensitive: true });
 
 /**
  * @swagger
  *
  * definitions:
- *   loginParam:
- *      description: Login Params
+ *   TicketNumberParam:
  *      properties:
- *        account:
+ *        redNumber:
  *          type: string
- *          default: admin
- *        password:
+ *        blueNumber:
  *          type: string
- *          default: admin
+ *   TicketAdd:
+ *      properties:
+ *        ticketList:
+ *          type: array
+ *          items:
+ *            $ref: '#/definitions/TicketNumberParam'
+ *        periodId:
+ *          type: string
  *
- * /admin/auth/login:
+ * /client/ticket/addTicket:
  *   post:
- *     summary: 管理员登录
- *     description: 管理员登录
+ *     summary: 新增彩票
+ *     description: 新增单个或多组彩票
  *     tags:
- *       - name: Admin
- *         description: 登录
+ *       - name: Client
+ *         description: 彩票管理
  *     produces:
  *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: auth token.
+ *         in: header
+ *         required: false
+ *         type: string
  *     requestBody:
  *       required: true
  *       name: body
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/definitions/loginParam'
+ *             $ref: '#/definitions/TicketAdd'
  *     responses:
  *       200:
  *         description: success
@@ -51,6 +62,6 @@ const router: Router = Router({ caseSensitive: true });
  *                           type: string
  *                           description: 用户名称
  */
-router.post("/login", AdminAuth.adminLogin);
+router.post("/addTicket", ClientTicket.addTicket);
 
 export default router;
