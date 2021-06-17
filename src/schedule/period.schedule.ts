@@ -5,6 +5,8 @@ import { scheduleJob, cancelJob } from "node-schedule";
 import { get } from "request-promise";
 import logger from "../utils/logger";
 import PeriodController from "../controllers/client/period.controller";
+import TicketController from "../controllers/client/ticket.controller";
+import { getGUID } from "../utils";
 
 // * * * * * *
 // ┬ ┬ ┬ ┬ ┬ ┬
@@ -18,11 +20,19 @@ import PeriodController from "../controllers/client/period.controller";
 
 // 每周一、三、六 20:25 爬取开奖信息
 export default class PeriodSchedule {
+  jobId: string;
   job: any;
-  constructor(jobId: string) {
-    this.start(jobId);
+  constructor() {
     this.close = this.close.bind(this);
+    this.start = this.start.bind(this);
+    this.init();
+  }
+  init() {
+    let jobId = getGUID();
+    TicketController.pollingTicket()
     this.dataCrawler();
+    this.job = this.start(jobId);
+    this.jobId = jobId
   }
   start(jobId: string) {
     return scheduleJob(
@@ -30,11 +40,12 @@ export default class PeriodSchedule {
       { hour: "20", minute: "30", dayOfWeek: [1, 3, 6] },
       () => {
         console.log("执行开奖爬取：", jobId);
+        TicketController.pollingTicket()
       }
     );
   }
-  close(jobId: string) {
-    cancelJob(jobId);
+  close() {
+    cancelJob(this.jobId);
   }
   dataCrawler() {
     let baseUrl = `https://webapi.sporttery.cn/gateway/lottery/getDigitalDrawInfoV1.qry?param=85,0&isVerify=0`;
@@ -55,11 +66,10 @@ export default class PeriodSchedule {
       })
         .then((res: object) => {
           //任务更新成功
-          console.log("开奖更新成功：", res);
+          logger.info("开奖更新成功：" + res);
         })
         .catch((err) => {
           //更新失败
-          console.log("开奖更新失败：", err);
           logger.error(`开奖信息更新失败：${err}`);
         });
     });

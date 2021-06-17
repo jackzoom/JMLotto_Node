@@ -3,12 +3,14 @@ import Base from "../base.controller";
 import TicketDao from "../../dao/ticket.dao";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import { Types } from "mongoose";
-import { TicketDocument } from "../../models/ticket.model";
+import logger from "../../utils/logger";
+import { getTicketPrice } from "../../utils/verifyTicket";
 
 export default new (class ClientTicket extends Base {
   constructor() {
     super();
     this.addTicket = this.addTicket.bind(this);
+    this.pollingTicket = this.pollingTicket.bind(this);
   }
 
   /**
@@ -39,5 +41,28 @@ export default new (class ClientTicket extends Base {
     } catch (err) {
       this.ResponseError(res, err);
     }
+  }
+
+  /**
+   * 轮询数据库验证中奖信息
+   * @description `Ticket->ticketStatus=0`
+   */
+  async pollingTicket(): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+
+      try {
+        let ticketList = await TicketDao.getUnVerifyTicektList();
+        for (let item of ticketList) {
+          let redArr = item.redNumber.split(',');
+          let blueArr = item.blueNumber.split(',');
+          console.log("单个票信息：", { item, price: getTicketPrice(redArr.length, blueArr.length) })
+          //TODO:核算中奖信息
+        }       
+        resolve()
+      } catch (err) {
+        logger.error("轮询彩票一异常：" + err)
+        reject()
+      }
+    })
   }
 })();

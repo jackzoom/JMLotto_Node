@@ -36,7 +36,7 @@ export default new (class ClientPeriod extends Base {
   constructor() {
     super();
     this.getPeriodList = this.getPeriodList.bind(this);
-    this.updateDrawResult = this.updateDrawResult.bind(this);
+    this.updateDrawResult = this.updateDrawResult.bind(this);    
   }
 
   /**
