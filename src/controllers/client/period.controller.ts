@@ -36,7 +36,7 @@ export default new (class ClientPeriod extends Base {
   constructor() {
     super();
     this.getPeriodList = this.getPeriodList.bind(this);
-    this.updateDrawResult = this.updateDrawResult.bind(this);    
+    this.updateDrawResult = this.updateDrawResult.bind(this);
   }
 
   /**
@@ -67,6 +67,7 @@ export default new (class ClientPeriod extends Base {
           lotteryNumber: drawInfo.drawNum,
           lotteryResult: drawInfo.drawResult,
           lotteryUnsortResult: drawInfo.drawResultUnsort,
+          periodStatus: 1,
         })
         .then((res) => {
           resolve(res);

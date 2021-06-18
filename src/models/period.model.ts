@@ -10,6 +10,7 @@ export type PeriodDocument = mongoose.Document & {
   lotteryResult: string;
   lotteryUnsortResult: string;
   lotteryTime: Date;
+  periodStatus: number;
   lotteryNumber: String;
 };
 
@@ -35,6 +36,14 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
      * 开奖时间
      */
     lotteryTime: Date,
+    /**
+     * 开奖状态
+     * @value 0 未开奖 1 已开奖
+     */
+    periodStatus: {
+      type: Number,
+      default: 0,
+    },
     /**
      * 开奖期数
      */

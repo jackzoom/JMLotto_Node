@@ -9,8 +9,8 @@ export type TicketDocument = mongoose.Document & {
   blueNumber: String;
   ticketStatus: Number;
   verifyDate: Date;
-  periodId: String;
-  userId: String;
+  periodId: Types.ObjectId;
+  userId: Types.ObjectId;
 };
 
 const ticketSchema = new mongoose.Schema<TicketDocument>(
@@ -31,6 +31,12 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
     ticketStatus: {
       type: Number,
       default: 0,
+    },
+    /**
+     * 中奖信息
+     */
+    winningInfo: {
+      type: Object,
     },
     /**
      * 验证时间

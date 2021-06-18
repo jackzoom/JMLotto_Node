@@ -29,10 +29,9 @@ export default class PeriodSchedule {
   }
   init() {
     let jobId = getGUID();
-    TicketController.pollingTicket()
     this.dataCrawler();
     this.job = this.start(jobId);
-    this.jobId = jobId
+    this.jobId = jobId;
   }
   start(jobId: string) {
     return scheduleJob(
@@ -40,7 +39,7 @@ export default class PeriodSchedule {
       { hour: "20", minute: "30", dayOfWeek: [1, 3, 6] },
       () => {
         console.log("执行开奖爬取：", jobId);
-        TicketController.pollingTicket()
+        TicketController.pollingTicket();
       }
     );
   }
@@ -67,10 +66,12 @@ export default class PeriodSchedule {
         .then((res: object) => {
           //任务更新成功
           logger.info("开奖更新成功：" + res);
+          TicketController.pollingTicket();
         })
         .catch((err) => {
           //更新失败
           logger.error(`开奖信息更新失败：${err}`);
+          TicketController.pollingTicket();
         });
     });
   }
