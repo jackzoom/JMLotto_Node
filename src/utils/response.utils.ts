@@ -1,9 +1,6 @@
+/// <reference path="../interface/response.interface.ts" />
+
 import { Response } from "express";
-import {
-  HttpResponse,
-  HttpResponseException,
-  HttpResponsePaging,
-} from "../interface/response.interface";
 import logger from "./logger";
 import { isDebug } from "../config/server.config";
 import { ApiHttpCode } from "../config/api.config";
@@ -16,7 +13,7 @@ import { hasObjectValue } from "../utils";
  * @statusCode 200
  */
 export const ResponseSuccess = (res: Response, data?: any) => {
-  let result: HttpResponse = {
+  let result: HttpResponse.Success = {
     errorCode: ApiHttpCode.RequestSuccess,
     errorMsg: "success",
     data,
@@ -33,10 +30,10 @@ export const ResponseSuccess = (res: Response, data?: any) => {
  */
 export const ResponseError = (
   res: Response,
-  error?: HttpResponseException,
+  error?: HttpResponse.Exception,
   statusCode?: number
 ) => {
-  let result: HttpResponse = {
+  let result: HttpResponse.Success = {
     errorCode: error.code || ApiHttpCode.RequestFail,
     errorMsg: error.message,
   };
@@ -56,8 +53,11 @@ export const ResponseError = (
  * @param error
  * @statusCode 500
  */
-export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
-  let result: HttpResponse = {
+export const ResponseCatch = (
+  res: Response,
+  error?: HttpResponse.Exception
+) => {
+  let result: HttpResponse.Success = {
     errorCode: error.code || ApiHttpCode.RequestFail,
     errorMsg: error.message,
   };
@@ -67,7 +67,7 @@ export const ResponseCatch = (res: Response, error?: HttpResponseException) => {
 };
 
 export const ResponsePaging = () => {
-  let result: HttpResponsePaging = {
+  let result: HttpResponse.Paging = {
     content: [],
     currentPage: 0,
     pageSize: 20,

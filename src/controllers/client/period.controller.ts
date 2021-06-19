@@ -4,6 +4,7 @@ import PeriodDao from "../../dao/period.dao";
 import periodDao from "../../dao/period.dao";
 import logger from "../../utils/logger";
 import { formatTime } from "../../utils";
+import { PeriodDocument } from "../../models/period.model";
 
 type DrawParams = {
   /**
@@ -56,7 +57,7 @@ export default new (class ClientPeriod extends Base {
    * 更新开奖信息
    * @param drawInfo
    */
-  async updateDrawResult(drawInfo: DrawParams): Promise<Object> {
+  async updateDrawResult(drawInfo: DrawParams): Promise<PeriodDocument> {
     return new Promise((resolve, reject) => {
       let drawResultArr = drawInfo.drawResult.split(" ");
       periodDao

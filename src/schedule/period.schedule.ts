@@ -7,6 +7,7 @@ import logger from "../utils/logger";
 import PeriodController from "../controllers/client/period.controller";
 import TicketController from "../controllers/client/ticket.controller";
 import { getGUID } from "../utils";
+import { PeriodDocument } from "../models/period.model";
 
 // * * * * * *
 // ┬ ┬ ┬ ┬ ┬ ┬
@@ -20,7 +21,7 @@ import { getGUID } from "../utils";
 
 // 每周一、三、六 20:25 爬取开奖信息
 export default class PeriodSchedule {
-  jobId: string;
+  jobId: string = getGUID();
   job: any;
   constructor() {
     this.close = this.close.bind(this);
@@ -28,10 +29,8 @@ export default class PeriodSchedule {
     this.init();
   }
   init() {
-    let jobId = getGUID();
     this.dataCrawler();
-    this.job = this.start(jobId);
-    this.jobId = jobId;
+    this.job = this.start(this.jobId);
   }
   start(jobId: string) {
     return scheduleJob(
@@ -39,40 +38,50 @@ export default class PeriodSchedule {
       { hour: "20", minute: "30", dayOfWeek: [1, 3, 6] },
       () => {
         console.log("执行开奖爬取：", jobId);
-        TicketController.pollingTicket();
+        this.dataCrawler().then(() => {
+          //轮循数据库
+          TicketController.pollingTicket();
+        });
       }
     );
   }
   close() {
     cancelJob(this.jobId);
   }
-  dataCrawler() {
-    let baseUrl = `https://webapi.sporttery.cn/gateway/lottery/getDigitalDrawInfoV1.qry?param=85,0&isVerify=0`;
-    get(baseUrl, {
-      json: true,
-    }).then((res) => {
-      let { success, value } = res;
-      if (!success) {
-      }
-      let lottoData = value.dlt;
-      PeriodController.updateDrawResult({
-        drawNum: lottoData.lotteryDrawNum,
-        drawResult: lottoData.lotteryDrawResult,
-        drawResultUnsort: lottoData.lotteryUnsortDrawresult,
-        drawTime: lottoData.lotteryDrawTime,
-        saleBeginTime: lottoData.lotterySaleBeginTime,
-        saleEndTime: lottoData.lotterySaleEndtime,
-      })
-        .then((res: object) => {
-          //任务更新成功
-          logger.info("开奖更新成功：" + res);
-          TicketController.pollingTicket();
+  /**
+   * 抓取体彩大乐透最后一期开奖信息
+   * @returns
+   */
+  async dataCrawler(): Promise<PeriodDocument | void> {
+    return new Promise((resolve: any, reject: any) => {
+      let baseUrl = `https://webapi.sporttery.cn/gateway/lottery/getDigitalDrawInfoV1.qry?param=85,0&isVerify=0`;
+      get(baseUrl, {
+        json: true,
+      }).then((res) => {
+        let { success, value } = res;
+        if (!success) {
+        }
+        let lottoData = value.dlt;
+        PeriodController.updateDrawResult({
+          drawNum: lottoData.lotteryDrawNum,
+          drawResult: lottoData.lotteryDrawResult,
+          drawResultUnsort: lottoData.lotteryUnsortDrawresult,
+          drawTime: lottoData.lotteryDrawTime,
+          saleBeginTime: lottoData.lotterySaleBeginTime,
+          saleEndTime: lottoData.lotterySaleEndtime,
         })
-        .catch((err) => {
-          //更新失败
-          logger.error(`开奖信息更新失败：${err}`);
-          TicketController.pollingTicket();
-        });
+          .then((res) => {
+            //任务更新成功
+            logger.info("开奖更新成功：" + res);
+            resolve(res);
+          })
+          .catch((err) => {
+            //更新失败
+            //TODO：邮件通知管理员
+            logger.error(`开奖信息更新失败：${err}`);
+            reject();
+          });
+      });
     });
   }
 }
