@@ -8,6 +8,7 @@ import PeriodController from "../controllers/client/period.controller";
 import TicketController from "../controllers/client/ticket.controller";
 import { getGUID } from "../utils";
 import { PeriodDocument } from "../models/period.model";
+import periodController from "../controllers/client/period.controller";
 
 // * * * * * *
 // ┬ ┬ ┬ ┬ ┬ ┬
@@ -29,7 +30,7 @@ export default class PeriodSchedule {
     this.init();
   }
   init() {
-    this.dataCrawler();
+    this.dataCrawler().then(() => {});
     this.job = this.start(this.jobId);
   }
   start(jobId: string) {
@@ -75,11 +76,16 @@ export default class PeriodSchedule {
             logger.info("开奖更新成功：" + res);
             resolve(res);
           })
-          .catch((err) => {
+          .catch(async (err) => {         
+            if (err.code === 11000) {
+              let res = await periodController.getPeriodByNum(
+                lottoData.lotteryDrawNum
+              );
+              return resolve(res);
+            }
             //更新失败
             //TODO：邮件通知管理员
             logger.error(`开奖信息更新失败：${err}`);
-            reject();
           });
       });
     });

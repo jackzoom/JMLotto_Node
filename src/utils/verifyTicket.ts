@@ -34,12 +34,17 @@ const c = (m: number, n: number) => {
  * 获取投注金额
  * @param redLen 红球个数
  * @param blueLen 篮球个数
+ * @param singlePrice 每注单价
  * @returns
  * @see https://www.lottery.gov.cn/dlt/ltjsq/index.html 大乐透计算器
  * @see https://static.sporttery.cn/res_1_0/tcw/default/tcdlt/num.js 大乐透计算器核心算法
  */
-export const getTicketPrice = (redLen: number, blueLen: number): number => {
-  return c(redLen, 5) * c(blueLen, 2) * 2;
+export const getTicketPrice = (
+  redLen: number,
+  blueLen: number,
+  singlePrice: number = 2
+): number => {
+  return c(redLen, 5) * c(blueLen, 2) * singlePrice;
 };
 
 /**

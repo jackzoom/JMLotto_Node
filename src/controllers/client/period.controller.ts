@@ -78,4 +78,14 @@ export default new (class ClientPeriod extends Base {
         });
     });
   }
+
+  /**
+   * 获取指定期开奖信息
+   */
+  async getPeriodByNum(drawNum: string): Promise<PeriodDocument> {
+    return new Promise(async (resolve, reject) => {
+      let periodRes = await periodDao.getPeriodByNum(drawNum);
+      resolve(periodRes);
+    });
+  }
 })();

@@ -13,6 +13,7 @@ export default new (class ClientTicket extends Base {
   constructor() {
     super();
     this.addTicket = this.addTicket.bind(this);
+    this.forecastPrice = this.forecastPrice.bind(this);
     this.pollingTicket = this.pollingTicket.bind(this);
   }
 
@@ -69,6 +70,41 @@ export default new (class ClientTicket extends Base {
         }
       });
     } catch (err) {
+      this.ResponseError(res, err);
+    }
+  }
+
+  /**
+   * 价格预估 Forecast ticket price
+   * @route client/ticket/forecast
+   * @param ticketList 彩票列表
+   * @param ticketList -> redNumber 红球号码
+   * @param ticketList -> blueNumber 篮球号码
+   */
+  async forecastPrice(req: Request, res: JwtAuthResponse): Promise<void> {
+    //TODO：校验彩票列表数据有效性
+    let { ticketList } = req.body;
+    let result: Array<object> = [];
+    let totalPrice: number = 0;
+    try {
+      ticketList.forEach((item: any) => {
+        let itemPrice = getTicketPrice(
+          item.redNumber.split(",").length,
+          item.blueNumber.split(",").length
+        );
+        result.push({
+          redNumber: item.redNumber,
+          blueNumber: item.blueNumber,
+          price: itemPrice,
+        });
+        totalPrice += itemPrice;
+      });
+      this.ResponseSuccess(res, {
+        ticketList: result,
+        totalPrice,
+      });
+    } catch (err) {
+      console.log(err);
       this.ResponseError(res, err);
     }
   }

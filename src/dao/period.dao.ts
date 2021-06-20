@@ -15,10 +15,11 @@ interface DBI<T> {
   getPeriodList(pageNum: number, pageSize: number): any;
   getLastPeriod(): any;
   getPeriodById(periodId: string): any;
+  getPeriodByNum(drawNum: string): any;
 }
 
 export default new (class PeriodDao<T> implements DBI<T> {
-  addPeriod(periodInfo: PeriodFields): Promise<PeriodDocument> {
+  async addPeriod(periodInfo: PeriodFields): Promise<PeriodDocument> {
     let periodModel = new Period(periodInfo);
     return periodModel.save();
   }
@@ -33,6 +34,11 @@ export default new (class PeriodDao<T> implements DBI<T> {
   getPeriodById(periodId: string): any {
     return Period.findOne({
       _id: periodId,
+    });
+  }
+  getPeriodByNum(drawNum: string): any {
+    return Period.findOne({
+      lotteryNumber: drawNum,
     });
   }
 })();

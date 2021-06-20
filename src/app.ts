@@ -86,4 +86,8 @@ app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
 
+process.on("unhandledRejection", (reason, p) => {
+  logger.error(`Unhandled Rejection at:${p} reason:${reason}`);
+  // application specific logging, throwing an error, or other logic here
+});
 export default app;
