@@ -5,13 +5,14 @@ import mongoose, { Types } from "mongoose";
 import { formatTime } from "../utils";
 
 export type PeriodDocument = mongoose.Document & {
-  lotteryRedNumber: String;
-  lotteryBlueNumber: String;
-  lotteryResult: string;
-  lotteryUnsortResult: string;
-  lotteryTime: Date;
-  periodStatus: number;
-  lotteryNumber: String;
+  lotteryRedNumber?: String;
+  lotteryBlueNumber?: String;
+  lotteryResult?: string;
+  lotteryUnsortResult?: string;
+  lotteryTime?: Date;
+  lotteryRealTime?: Date;
+  periodStatus?: number;
+  lotteryNumber: number;
 };
 
 const periodSchema = new mongoose.Schema<PeriodDocument>(
@@ -37,6 +38,10 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
      */
     lotteryTime: Date,
     /**
+     * 实际开奖时间
+     */
+    lotteryRealTime: Date,
+    /**
      * 开奖状态
      * @value 0 未开奖 1 已开奖
      */
@@ -48,7 +53,7 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
      * 开奖期数
      */
     lotteryNumber: {
-      type: String,
+      type: Number,
       unique: true,
     },
   },

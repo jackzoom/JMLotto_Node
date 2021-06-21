@@ -6,9 +6,8 @@ import { get } from "request-promise";
 import logger from "../utils/logger";
 import PeriodController from "../controllers/client/period.controller";
 import TicketController from "../controllers/client/ticket.controller";
-import { getGUID } from "../utils";
+import { formatTime, getGUID } from "../utils";
 import { PeriodDocument } from "../models/period.model";
-import periodController from "../controllers/client/period.controller";
 
 // * * * * * *
 // ┬ ┬ ┬ ┬ ┬ ┬
@@ -36,12 +35,13 @@ export default class PeriodSchedule {
   start(jobId: string) {
     return scheduleJob(
       jobId,
-      { hour: "20", minute: "30", dayOfWeek: [1, 3, 6] },
+      { hour: "20", minute: "50", dayOfWeek: [1, 3, 6] },
       () => {
-        console.log("执行开奖爬取：", jobId);
+        //1. 抓取开奖信息
+        //2. 创建下期开奖信息
+        logger.info(`执行开奖爬取`);
         this.dataCrawler().then(() => {
-          //轮循数据库
-          TicketController.pollingTicket();
+          this.eventHandle();
         });
       }
     );
@@ -49,6 +49,15 @@ export default class PeriodSchedule {
   close() {
     cancelJob(this.jobId);
   }
+  /**
+   * 开奖后事件处理
+   */
+  eventHandle = () => {
+    //轮循数据库
+    TicketController.pollingTicket();
+    //自动追加下一期
+    PeriodController.addNextPeriodByAuto();
+  };
   /**
    * 抓取体彩大乐透最后一期开奖信息
    * @returns
@@ -58,36 +67,45 @@ export default class PeriodSchedule {
       let baseUrl = `https://webapi.sporttery.cn/gateway/lottery/getDigitalDrawInfoV1.qry?param=85,0&isVerify=0`;
       get(baseUrl, {
         json: true,
-      }).then((res) => {
-        let { success, value } = res;
-        if (!success) {
-        }
-        let lottoData = value.dlt;
-        PeriodController.updateDrawResult({
-          drawNum: lottoData.lotteryDrawNum,
-          drawResult: lottoData.lotteryDrawResult,
-          drawResultUnsort: lottoData.lotteryUnsortDrawresult,
-          drawTime: lottoData.lotteryDrawTime,
-          saleBeginTime: lottoData.lotterySaleBeginTime,
-          saleEndTime: lottoData.lotterySaleEndtime,
-        })
-          .then((res) => {
-            //任务更新成功
-            logger.info("开奖更新成功：" + res);
-            resolve(res);
-          })
-          .catch(async (err) => {         
-            if (err.code === 11000) {
-              let res = await periodController.getPeriodByNum(
-                lottoData.lotteryDrawNum
-              );
-              return resolve(res);
-            }
-            //更新失败
+      })
+        .then((res) => {
+          let { success, value } = res;
+          if (!success) {
+            //接口爬取数据返回异常
             //TODO：邮件通知管理员
-            logger.error(`开奖信息更新失败：${err}`);
-          });
-      });
+            return logger.error(`开奖数据爬取解析异常`);
+          }
+          let lottoData = value.dlt;
+          PeriodController.updateDrawResult({
+            drawNum: lottoData.lotteryDrawNum,
+            drawResult: lottoData.lotteryDrawResult,
+            drawResultUnsort: lottoData.lotteryUnsortDrawresult,
+            drawTime: lottoData.lotteryDrawTime,
+            saleBeginTime: lottoData.lotterySaleBeginTime,
+            saleEndTime: lottoData.lotterySaleEndtime,
+          })
+            .then((res) => {
+              //任务更新成功
+              logger.info("开奖更新成功：" + res);
+              this.eventHandle();
+              resolve(res);
+            })
+            .catch(async (err) => {
+              if (err.code === 11000) {
+                let res = await PeriodController.getPeriodByNum(
+                  lottoData.lotteryDrawNum
+                );
+                return resolve(res);
+              }
+              //更新失败
+              //TODO：邮件通知管理员
+              logger.error(`开奖信息更新失败：${err}`);
+            });
+        })
+        .catch(() => {
+          //TODO：邮件通知管理员
+          logger.error(`开奖数据爬取异常`);
+        });
     });
   }
 }

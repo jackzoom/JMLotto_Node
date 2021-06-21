@@ -5,7 +5,7 @@ import PeriodDao from "../../dao/period.dao";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import { Types } from "mongoose";
 import logger from "../../utils/logger";
-import { getTicketPrice, verifyTicketResult } from "../../utils/verifyTicket";
+import { getTicketPrice, verifyTicketResult } from "../../utils/ticket";
 import { TicketDocument } from "../../models/ticket.model";
 import ticketDao from "../../dao/ticket.dao";
 

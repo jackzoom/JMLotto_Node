@@ -1,10 +1,15 @@
-import winston from "winston";
+import winston, { format } from "winston";
 import path from "path";
+
+const myFormat = format.printf(({ level, message, timestamp }) => {
+  return `${timestamp} [${level}]: ${message}`;
+});
 
 const options: winston.LoggerOptions = {
   transports: [
     new winston.transports.Console({
       level: process.env.NODE_ENV === "production" ? "error" : "debug",
+      format: format.combine(format.timestamp(), format.colorize(), myFormat),
     }),
     //info级别的保存在info.log文件中
     new winston.transports.File({

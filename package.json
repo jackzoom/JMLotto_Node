@@ -8,7 +8,8 @@
   },
   "author": "jackzoom",
   "scripts": {
-    "start": "cross-env --mode=localhost ts-node src/server.ts",
+    "start": "cross-env --mode=development ts-node src/server.ts",
+    "start:local": "cross-env --mode=localhost ts-node src/server.ts",
     "serve": "nodemon",
     "build": "tsc",
     "test": "jest --forceExit --coverage --verbose"

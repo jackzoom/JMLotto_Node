@@ -18,6 +18,7 @@ const PORT = EnvConfig.PORT;
 // Connect to MongoDB
 const mongoUrl = DBConfig.MONGODB_URI;
 mongoose.Promise = bluebird;
+mongoose.set("useFindAndModify", false);
 
 mongoose
   .connect(mongoUrl, {

@@ -3,6 +3,7 @@
  */
 import { RankResult } from "../interface/rank.interface";
 import { LottoRankRules } from "../config/ticket.config";
+import moment from "moment";
 
 const jc = (m: number, n: number, mn: number) => {
   var fz = 1;
@@ -103,3 +104,28 @@ export const verifyTicketResult = (
     },
   };
 };
+
+/**
+ * 获取下一期开奖时间
+ */
+export function getNextDrawDate(): Date {
+  //时间必须大于当前时间
+  //判断当前为周几
+  let currentDays = moment().weekday();
+  let res;
+  switch (currentDays) {
+    case 1:
+    case 2:
+      res = moment().day(3);
+      break;
+    case 3:
+    case 4:
+    case 5:
+      res = moment().day(6);
+      break;
+    case 6:
+    case 7:
+      res = moment().day(8);
+  }
+  return res.hour(20).minute(50).second(0).millisecond(0).toDate();
+}
