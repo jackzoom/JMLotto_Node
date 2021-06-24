@@ -17,7 +17,6 @@ interface DBI<T> {
   updatePeriod(periodInfo: PeriodFields): any;
   getPeriodList(pageNum: number, pageSize: number): any;
   getLastPeriod(): any;
-  getPeriodById(periodId: string): any;
   getPeriodByNum(drawNum: number): any;
 }
 

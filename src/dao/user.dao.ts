@@ -1,3 +1,4 @@
+import logger from "../utils/logger";
 import { User, UserDocument } from "../models/user.model";
 
 interface DBI<T> {
@@ -39,11 +40,20 @@ export default new (class UserDao<T> implements DBI<T> {
     password: string,
     isAdmin: number = 0
   ): any {
-    return User.findOne({
-      account,
-      password,
-      isAdmin,
-    });
+    return new Promise((resolve, reject) => {
+      User.findOne({
+        account,
+        isAdmin,
+      }).select("+password").then(userDoc => {
+        if (!userDoc) return reject("账户登录失败")
+        userDoc.comparePassword(password, (err, isMatch) => {
+          err && logger.error("账户登录异常：", err)
+          if (!isMatch || err) return reject("账户登录失败")
+          resolve(userDoc);
+        })
+      })
+    })
+
   }
   /**
    * 获取所有用户

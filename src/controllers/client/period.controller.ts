@@ -38,6 +38,7 @@ export default new (class ClientPeriod extends Base {
   constructor() {
     super();
     this.getPeriodList = this.getPeriodList.bind(this);
+    this.getPeriodDetail = this.getPeriodDetail.bind(this);
     this.addNextPeriodByAuto = this.addNextPeriodByAuto.bind(this);
     this.updateDrawResult = this.updateDrawResult.bind(this);
   }
@@ -54,6 +55,25 @@ export default new (class ClientPeriod extends Base {
       this.ResponseSuccess(res, data);
     });
   }
+
+  /**
+   * 获取周期详情 GetPeriodDetail
+   * @group ClientPeriod
+   * @route GET /client/period/detail
+   * @param req
+   * @param res
+   */
+  async getPeriodDetail(req: Request, res: Response) {
+
+    let { periodId } = req.query;
+    PeriodDao.getPeriodById(periodId as string).then((data: any) => {
+      this.ResponseSuccess(res, data);
+    }).catch((err: any) => {
+      this.ResponseError(res, err)
+    }
+    )
+  }
+
 
   /**
    * 自动添加下期开奖信息

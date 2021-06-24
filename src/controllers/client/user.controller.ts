@@ -85,7 +85,11 @@ export default new (class AdminUser extends Base {
           token,
         });
       }
-    );
+    ).catch((err: any) => {
+      this.ResponseError(res, {
+        message: err
+      })
+    })
   }
 
   /**

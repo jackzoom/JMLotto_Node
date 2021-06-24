@@ -116,5 +116,4 @@ const comparePassword: comparePasswordFunction = function (
 };
 
 userSchema.methods.comparePassword = comparePassword;
-
 export const User = mongoose.model<UserDocument>("User", userSchema);
