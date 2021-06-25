@@ -38,29 +38,34 @@ export default new (class ClientTicket extends Base {
           userId: Types.ObjectId(userId),
           periodId: Types.ObjectId(periodId),
         });
-        totalPrice += getTicketPrice(item.redNumber.split(',').length, item.blueNumber.split(',').length, 2);
+        totalPrice += getTicketPrice(
+          item.redNumber.split(",").length,
+          item.blueNumber.split(",").length,
+          2
+        );
       });
 
       //生成订单 + 计算订单金额
       let orderRes = await OrderDao.addOrder({
-        orderPrice: totalPrice
+        orderPrice: totalPrice,
       });
-      batchList = batchList.map(item => {
+      batchList = batchList.map((item) => {
         return {
           ...item,
-          orderId: orderRes._id
-        }
-      })
-      TicketDao.addTicketBatch(batchList).then(async (ticketRes: any) => {
+          orderId: orderRes._id,
+        };
+      });
+      TicketDao.addTicketBatch(batchList).then(async (ticketInfo: any) => {
         // 校验当前期是否已经开奖
         // - 已开奖
         //   - 直接验证中奖信息
         // - 未开奖
         //
         let drawResult = await PeriodDao.getPeriodById(periodId);
+        let drawList: Array<any> = [];
         // console.log("新增彩票验证：", drawResult);
         if (drawResult.periodStatus === 1) {
-          ticketRes.forEach(async (item: any) => {
+          ticketInfo.forEach(async (item: any) => {
             let redArr = item.redNumber.split(",");
             let blueArr = item.blueNumber.split(",");
             let result = verifyTicketResult(
@@ -68,18 +73,20 @@ export default new (class ClientTicket extends Base {
               blueArr,
               drawResult.lotteryResult.split(" ")
             );
-            let drawList = [];
-            let drawTicket = await TicketDao.updateTicketStatus(item._id, result);
-            drawList.push(drawTicket)
-            if (result.status === 1)
-              logger.info(
-                "[新增彩票] 更新一个中奖彩票 ticketId：" + item._id
-              );
-            this.ResponseSuccess(res, drawList);
+            let drawTicket = await TicketDao.updateTicketStatus(
+              item._id,
+              result
+            );
+            if (result.status === 1) {
+              logger.info("[新增彩票] 更新一个中奖彩票 ticketId：" + item._id);
+              drawList.push(drawTicket.toJSON());
+            }
           });
-        } else {
-          return this.ResponseSuccess(res, ticketRes);
         }
+        this.ResponseSuccess(res, {
+          ticketInfo,
+          drawList,
+        });
       });
     } catch (err) {
       this.ResponseError(res, err);
