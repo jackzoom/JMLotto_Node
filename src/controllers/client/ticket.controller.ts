@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import Base from "../base.controller";
 import TicketDao from "../../dao/ticket.dao";
 import PeriodDao from "../../dao/period.dao";
+import OrderDao from "../../dao/order.dao";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import { Types } from "mongoose";
 import logger from "../../utils/logger";
 import { getTicketPrice, verifyTicketResult } from "../../utils/ticket";
 import { TicketDocument } from "../../models/ticket.model";
-import ticketDao from "../../dao/ticket.dao";
 
 export default new (class ClientTicket extends Base {
   constructor() {
@@ -27,8 +27,9 @@ export default new (class ClientTicket extends Base {
    */
   async addTicket(req: Request, res: JwtAuthResponse): Promise<void> {
     let batchList: Array<TicketDocument | any> = [];
-    let { ticketList, periodId } = req.body;
+    let { ticketList, periodId, orderId } = req.body;
     let { userId } = res.authUser;
+    let totalPrice = 0;
     try {
       ticketList.forEach((item: any) => {
         batchList.push({
@@ -37,7 +38,19 @@ export default new (class ClientTicket extends Base {
           userId: Types.ObjectId(userId),
           periodId: Types.ObjectId(periodId),
         });
+        totalPrice += getTicketPrice(item.redNumber.split(',').length, item.blueNumber.split(',').length, 2);
       });
+
+      //生成订单 + 计算订单金额
+      let orderRes = await OrderDao.addOrder({
+        orderPrice: totalPrice
+      });
+      batchList = batchList.map(item => {
+        return {
+          ...item,
+          orderId: orderRes._id
+        }
+      })
       TicketDao.addTicketBatch(batchList).then(async (ticketRes: any) => {
         // 校验当前期是否已经开奖
         // - 已开奖
@@ -47,7 +60,7 @@ export default new (class ClientTicket extends Base {
         let drawResult = await PeriodDao.getPeriodById(periodId);
         // console.log("新增彩票验证：", drawResult);
         if (drawResult.periodStatus === 1) {
-          ticketRes.forEach((item: any) => {
+          ticketRes.forEach(async (item: any) => {
             let redArr = item.redNumber.split(",");
             let blueArr = item.blueNumber.split(",");
             let result = verifyTicketResult(
@@ -55,15 +68,14 @@ export default new (class ClientTicket extends Base {
               blueArr,
               drawResult.lotteryResult.split(" ")
             );
-            TicketDao.updateTicketStatus(item._id, result).then(
-              async (drawTicket: any) => {
-                if (result.status === 1)
-                  logger.info(
-                    "[新增彩票] 更新一个中奖彩票 ticketId：" + item._id
-                  );
-                this.ResponseSuccess(res, drawTicket);
-              }
-            );
+            let drawList = [];
+            let drawTicket = await TicketDao.updateTicketStatus(item._id, result);
+            drawList.push(drawTicket)
+            if (result.status === 1)
+              logger.info(
+                "[新增彩票] 更新一个中奖彩票 ticketId：" + item._id
+              );
+            this.ResponseSuccess(res, drawList);
           });
         } else {
           return this.ResponseSuccess(res, ticketRes);

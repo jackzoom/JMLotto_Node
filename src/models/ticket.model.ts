@@ -11,6 +11,7 @@ export type TicketDocument = mongoose.Document & {
   verifyDate: Date;
   periodId: Types.ObjectId;
   userId: Types.ObjectId;
+  orderId: Types.ObjectId;
 };
 
 const ticketSchema = new mongoose.Schema<TicketDocument>(
@@ -61,6 +62,13 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
       type: String,
       ref: "User",
     },
+    /**
+     * 订单编号
+     */
+    orderId: {
+      type: String,
+      ref: "Order"
+    }
   },
   {
     timestamps: true,

@@ -2,6 +2,7 @@ import { Router } from "express";
 const router: Router = Router({ caseSensitive: true });
 import User from "./user.router";
 import Ticket from "./ticket.router";
+import Order from "./order.router";
 import Period from "./period.router";
 
 /**
@@ -38,6 +39,7 @@ import Period from "./period.router";
 
 router.use("/user", User);
 router.use("/ticket", Ticket);
+router.use("/order", Order);
 router.use("/period", Period);
 
 export default router;

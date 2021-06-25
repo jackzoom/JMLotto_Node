@@ -6,8 +6,8 @@ interface DBI<T> {
   getUserByAccount(account: string, password: string, isAdmin: number): any;
   getUserList: any;
   addUser(userInfo: UserInterface): Promise<UserDocument>;
-  updateUser(userId: string, userInfo: T): Promise<UserDocument>;
-  deleteUser(userId: string): Promise<UserDocument>;
+  updateUser(userId: string, userInfo: UserInterface): Promise<UserDocument>;
+  deleteUser(userId: string): Promise<any>;
 }
 
 interface UserInterface {
@@ -44,6 +44,7 @@ export default new (class UserDao<T> implements DBI<T> {
       User.findOne({
         account,
         isAdmin,
+        isDelete: 0
       }).select("+password").then(userDoc => {
         if (!userDoc) return reject("账户登录失败")
         userDoc.comparePassword(password, (err, isMatch) => {
@@ -69,10 +70,12 @@ export default new (class UserDao<T> implements DBI<T> {
     let UserModel = new User(userInfo);
     return UserModel.save();
   }
-  updateUser(userId: string, userInfo: T): Promise<UserDocument> {
-    throw new Error("Method not implemented.");
+  updateUser(userId: string, userInfo: UserInterface): any {
+    return User.findByIdAndUpdate(userId, userInfo)
   }
-  deleteUser(userId: string): Promise<UserDocument> {
-    throw new Error("Method not implemented.");
+  deleteUser(userId: string): any {
+    return User.findByIdAndUpdate(userId, {
+      isDelete: 1
+    })
   }
 })();

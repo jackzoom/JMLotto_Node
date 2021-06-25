@@ -51,7 +51,9 @@ export default new (class ClientPeriod extends Base {
    * @param res
    */
   async getPeriodList(req: Request, res: Response) {
-    PeriodDao.getPeriodList().then((data: any) => {
+    let pageNum = (req.query.pageNum || 1) as number;
+    let pageSize = (req.query.pageSize || 20) as number;
+    PeriodDao.getPeriodList(pageNum, pageSize).then((data: any) => {
       this.ResponseSuccess(res, data);
     });
   }

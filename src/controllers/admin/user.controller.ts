@@ -10,6 +10,7 @@ export default new (class AdminUser extends Base {
     super();
     this.getUser = this.getUser.bind(this);
     this.getUserList = this.getUserList.bind(this);
+    this.deleteUser = this.deleteUser.bind(this);
     this.insertTestUser = this.insertTestUser.bind(this);
   }
 
@@ -21,11 +22,13 @@ export default new (class AdminUser extends Base {
    * @param res
    */
   async insertTestUser(req: Request, res: Response) {
-    let { account, password } = req.body;
+    let { account, password, isAdmin, parentId } = req.body;
     let userDoc = {
       openId: getGUID(),
       account,
       password,
+      isAdmin,
+      parentId
     };
     UserDao.addUser({
       ...userDoc,
@@ -40,15 +43,33 @@ export default new (class AdminUser extends Base {
   }
 
   /**
-   * GetUserList
+   * 获取用户列表 GetUserList
    * @group AdminUser
    * @route GET /admin/user
    * @param req
    * @param res
    */
   async getUserList(req: Request, res: Response) {
-    UserDao.getUserList(1).then((data: any) => {
+    UserDao.getUserList(0).then((data: any) => {
       this.ResponseSuccess(res, data);
+    }).catch((err: any) => {
+      this.ResponseError(res, err);
+    });
+  }
+
+  /**
+   * 删除用户 DeleteUser
+   * @group AdminUser
+   * @route GET /admin/user
+   * @param req 
+   * @param res 
+   */
+  async deleteUser(req: Request, res: Response) {
+    let { userId } = req.params;
+    UserDao.deleteUser(userId).then((data: any) => {
+      this.ResponseSuccess(res, data);
+    }).catch((err: any) => {
+      this.ResponseError(res, err);
     });
   }
 

@@ -1,7 +1,7 @@
 /**
  * 开奖表
  */
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import { formatTime } from "../utils";
 
 export type PeriodDocument = mongoose.Document & {
@@ -55,7 +55,7 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
     lotteryNumber: {
       type: Number,
       unique: true,
-    },
+    }    
   },
   {
     timestamps: true,

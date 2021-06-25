@@ -118,6 +118,12 @@ router.get("/getUser", AdminUser.getUser);
  *        password:
  *          type: string
  *          default: ''
+ *        idAdmin:
+ *          type: number
+ *          default: 0
+ *        parentId:
+ *          type: number
+ *          default: 0
  *
  * /admin/user/insertTestUser:
  *   post:
@@ -156,4 +162,37 @@ router.get("/getUser", AdminUser.getUser);
  */
 router.post("/insertTestUser", AdminUser.insertTestUser);
 
+/**
+ * @swagger
+ *
+ * /admin/user/{userId}:
+ *   delete:
+ *     summary: 添加测试用户
+ *     description: 添加测试用户
+ *     tags:
+ *       - name: Admin
+ *         description: 用户管理
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: auth token.
+ *         in: header
+ *         required: false
+ *         type: string
+ *       - name: userId
+ *         description: 用户编号
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Basic'
+ */
+router.delete('/:userId', AdminUser.deleteUser)
 export default router;

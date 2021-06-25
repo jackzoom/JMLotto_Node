@@ -23,6 +23,7 @@ export type UserDocument = mongoose.Document & {
   lastLogin: Date;
   parentId: string;
   isAdmin: number;
+  isDelete: number;
   comparePassword: comparePasswordFunction;
 };
 
@@ -59,6 +60,10 @@ const userSchema = new mongoose.Schema<UserDocument>(
       type: Number,
       default: 0,
     },
+    isDelete: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true,
