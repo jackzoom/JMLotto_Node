@@ -4,7 +4,6 @@ import TicketDao from "../../dao/ticket.dao";
 import PeriodDao from "../../dao/period.dao";
 import OrderDao from "../../dao/order.dao";
 import { JwtAuthResponse } from "../../interface/auth.interface";
-import { Types } from "mongoose";
 import logger from "../../utils/logger";
 import { getTicketPrice, verifyTicketResult } from "../../utils/ticket";
 import { TicketDocument } from "../../models/ticket.model";
@@ -35,8 +34,8 @@ export default new (class ClientTicket extends Base {
         batchList.push({
           redNumber: item.redNumber,
           blueNumber: item.blueNumber,
-          userId: Types.ObjectId(userId),
-          periodId: Types.ObjectId(periodId),
+          userId,
+          periodId,
         });
         totalPrice += getTicketPrice(
           item.redNumber.split(",").length,
@@ -48,6 +47,7 @@ export default new (class ClientTicket extends Base {
       //生成订单 + 计算订单金额
       let orderRes = await OrderDao.addOrder({
         orderPrice: totalPrice,
+        userId,
       });
       batchList = batchList.map((item) => {
         return {
@@ -78,7 +78,9 @@ export default new (class ClientTicket extends Base {
               result
             );
             if (result.status === 1) {
-              logger.info("[新增彩票] 更新一个中奖彩票 ticketId：" + ticketItem._id);
+              logger.info(
+                "[新增彩票] 更新一个中奖彩票 ticketId：" + ticketItem._id
+              );
               drawList.push(drawTicket.toJSON());
             }
           }

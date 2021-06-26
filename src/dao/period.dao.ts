@@ -3,8 +3,8 @@ import { Period, PeriodDocument } from "../models/period.model";
 
 interface PeriodFields {
   lotteryNumber: number;
-  lotteryRedNumber?: String;
-  lotteryBlueNumber?: String;
+  lotteryRedNumber?: string;
+  lotteryBlueNumber?: string;
   lotteryResult?: string;
   lotteryUnsortResult?: string;
   lotteryTime?: Date;

@@ -5,8 +5,8 @@ import mongoose from "mongoose";
 import { formatTime } from "../utils";
 
 export type PeriodDocument = mongoose.Document & {
-  lotteryRedNumber?: String;
-  lotteryBlueNumber?: String;
+  lotteryRedNumber?: string;
+  lotteryBlueNumber?: string;
   lotteryResult?: string;
   lotteryUnsortResult?: string;
   lotteryTime?: Date;

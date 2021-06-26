@@ -1,5 +1,6 @@
 import logger from "../utils/logger";
 import { User, UserDocument } from "../models/user.model";
+import { ObjectId } from "mongodb";
 
 interface DBI<T> {
   getUserById(userId: string): Promise<UserDocument>;
@@ -32,7 +33,7 @@ interface UserInterface {
 export default new (class UserDao<T> implements DBI<T> {
   getUserById(userId: string): any {
     return User.findById({
-      _id: userId,
+      _id: new ObjectId(userId),
     }).select("+account");
   }
   getUserByAccount(

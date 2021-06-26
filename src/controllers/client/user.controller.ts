@@ -7,6 +7,7 @@ import { AppletLogin } from "../../config/scope.config";
 import { ApiWxAppletAppID, ApiWxAppletSecret } from "../../config/api.config";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import { UserDocument } from "../../models/user.model";
+import { ObjectId } from "mongodb";
 
 export default new (class AdminUser extends Base {
   constructor() {
@@ -50,7 +51,7 @@ export default new (class AdminUser extends Base {
           ...userDoc,
         }).then((userRes: any) => {
           let token = SignToken({
-            userId: userRes.userId,
+            userId: new ObjectId(userRes.userId),
             scope: AppletLogin,
           });
           this.ResponseSuccess(res, { ...userRes, token });
@@ -69,14 +70,14 @@ export default new (class AdminUser extends Base {
    */
   async accountLogin(req: Request, res: Response) {
     let { account, password } = req.body;
-    UserDao.getUserByAccount(account, password, 0).then(
-      (userRes: UserDocument) => {
+    UserDao.getUserByAccount(account, password, 0)
+      .then((userRes: UserDocument) => {
         if (!userRes)
           return this.ResponseError(res, {
             message: "账户密码验证错误",
           });
         let token = SignToken({
-          userId: userRes._id,
+          userId: new ObjectId(userRes._id),
           scope: AppletLogin,
         });
 
@@ -84,12 +85,12 @@ export default new (class AdminUser extends Base {
           nickName: userRes.nickName,
           token,
         });
-      }
-    ).catch((err: any) => {
-      this.ResponseError(res, {
-        message: err
       })
-    })
+      .catch((err: any) => {
+        this.ResponseError(res, {
+          message: err,
+        });
+      });
   }
 
   /**

@@ -22,13 +22,27 @@ export default new (class ClientOrder extends Base {
     let pageNum = (req.query.pageNum || 1) as number;
     let pageSize = (req.query.pageSize || 20) as number;
     try {
-      OrderDao.getOrderList(userId, pageNum, pageSize).then((data: any) => {
-        this.ResponseSuccess(res, data);
-      }).catch((err: any) => {
-        this.ResponseError(res, err)
-      })
+      OrderDao.getOrderList(userId, pageNum, pageSize)
+        .then((data: any) => {
+          this.ResponseSuccess(
+            res,
+            data.map((item: any) => {
+              item.orderId = item._id;
+              delete item._id;
+              item.ticketList = item.ticketList.map((titem: any) => {
+                titem.ticketId = titem._id;
+                delete titem._id;
+                return titem;
+              });
+              return item;
+            })
+          );
+        })
+        .catch((err: any) => {
+          this.ResponseError(res, err);
+        });
     } catch (err) {
-      this.ResponseError(res, err)
+      this.ResponseError(res, err);
     }
   }
 
@@ -41,10 +55,12 @@ export default new (class ClientOrder extends Base {
    */
   async getOrderDetail(req: Request, res: Response) {
     let { orderId } = req.query;
-    OrderDao.getOrderById(orderId as string).then((data: any) => {
-      this.ResponseSuccess(res, data);
-    }).catch((err: any) => {
-      this.ResponseError(res, err)
-    })
+    OrderDao.getOrderById(orderId as string)
+      .then((data: any) => {
+        this.ResponseSuccess(res, data);
+      })
+      .catch((err: any) => {
+        this.ResponseError(res, err);
+      });
   }
 })();
