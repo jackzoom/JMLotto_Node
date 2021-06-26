@@ -63,28 +63,28 @@ export default new (class ClientTicket extends Base {
         //
         let drawResult = await PeriodDao.getPeriodById(periodId);
         let drawList: Array<any> = [];
-        // console.log("新增彩票验证：", drawResult);
         if (drawResult.periodStatus === 1) {
-          ticketInfo.forEach(async (item: any) => {
-            let redArr = item.redNumber.split(",");
-            let blueArr = item.blueNumber.split(",");
+          for (let i = 0; i < ticketInfo.length; i++) {
+            let ticketItem = ticketInfo[i];
+            let redArr = ticketItem.redNumber.split(",");
+            let blueArr = ticketItem.blueNumber.split(",");
             let result = verifyTicketResult(
               redArr,
               blueArr,
               drawResult.lotteryResult.split(" ")
             );
             let drawTicket = await TicketDao.updateTicketStatus(
-              item._id,
+              ticketItem._id,
               result
             );
             if (result.status === 1) {
-              logger.info("[新增彩票] 更新一个中奖彩票 ticketId：" + item._id);
+              logger.info("[新增彩票] 更新一个中奖彩票 ticketId：" + ticketItem._id);
               drawList.push(drawTicket.toJSON());
             }
-          });
+          }
         }
         this.ResponseSuccess(res, {
-          ticketInfo,
+          ticketList: ticketInfo,
           drawList,
         });
       });

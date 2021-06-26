@@ -82,15 +82,17 @@ export default new (class ClientPeriod extends Base {
    */
   async addNextPeriodByAuto() {
     return new Promise(async (resolve, reject) => {
-      let lastPeriod = await periodDao.getLastPeriod();
-      if (!lastPeriod) {
-        return reject();
+      try{
+        let lastPeriod = await periodDao.getLastPeriod();
+        let newPeriod = await PeriodDao.addPeriod({
+          lotteryNumber: (lastPeriod.lotteryNumber + 1) as number,
+          lotteryTime: getNextDrawDate(),
+        });
+        resolve(newPeriod);
+      }catch(err){
+        reject(err)
       }
-      let newPeriod = await PeriodDao.addPeriod({
-        lotteryNumber: (lastPeriod.lotteryNumber + 1) as number,
-        lotteryTime: getNextDrawDate(),
-      });
-      resolve(newPeriod);
+      
     });
   }
 
@@ -115,7 +117,7 @@ export default new (class ClientPeriod extends Base {
         .then(async (res: any) => {
           //更新失败
           if (!res) {
-            let newDoc = await periodDao.addPeriod(drawParam);
+            let newDoc = await periodDao.addPeriod(drawParam);           
             return resolve(newDoc);
           }
           resolve(res);

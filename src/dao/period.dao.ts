@@ -29,7 +29,7 @@ export default new (class PeriodDao<T> implements DBI<T> {
     return periodModel.save();
   }
   updatePeriod(periodInfo: PeriodFields): any {
-    console.log("更新开奖信息：", { periodInfo });
+    // console.log("更新开奖信息：", { periodInfo });
     return Period.findOneAndUpdate(
       {
         lotteryNumber: periodInfo.lotteryNumber,
