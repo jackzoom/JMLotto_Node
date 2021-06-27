@@ -4,6 +4,7 @@
 export const ApiWhiteList = [
   ...["/user/weappLogin", "/user/accountLogin"],
   ...["/auth/login", "/user/insertTestUser"],
+  ...["/wx/checkPushMsg"],
 ];
 
 /**
@@ -51,4 +52,9 @@ export const ApiWxAppletSecret = `9d5adba60745a48e86d584de3934f57e`;
 /**
  * Wechat Message Serivce Token
  */
-export const WxMsgToken = `JMLOTTO_WX_TOKEN`
+export const WxMsgToken = `JMLOTTO_WX_TOKEN`;
+
+/**
+ * 消息推送 消息加密密钥
+ */
+export const WxMsgEncodingAESKey = `NinsClvadby37orCvPjl2mT2z930Og9vQjMFJWBiQ15`;
