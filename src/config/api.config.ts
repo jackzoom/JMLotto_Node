@@ -47,3 +47,8 @@ export const ApiWxAppletAppID = `wx1c488632ee2510b8`;
  * Api Applet Secret
  */
 export const ApiWxAppletSecret = `9d5adba60745a48e86d584de3934f57e`;
+
+/**
+ * Wechat Message Serivce Token
+ */
+export const WxMsgToken = `JMLOTTO_WX_TOKEN`

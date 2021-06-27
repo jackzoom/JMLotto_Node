@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Base from "../base.controller";
 import TicketDao from "../../dao/ticket.dao";
 import PeriodDao from "../../dao/period.dao";
-import OrderDao from "../../dao/order.dao";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import logger from "../../utils/logger";
 import { getTicketPrice, verifyTicketResult } from "../../utils/ticket";
@@ -11,88 +10,8 @@ import { TicketDocument } from "../../models/ticket.model";
 export default new (class ClientTicket extends Base {
   constructor() {
     super();
-    this.addTicket = this.addTicket.bind(this);
     this.forecastPrice = this.forecastPrice.bind(this);
     this.pollingTicket = this.pollingTicket.bind(this);
-  }
-
-  /**
-   * 添加彩票 Add Ticket
-   * @route client/ticket/addTicket
-   * @param ticketList 彩票列表
-   * @param ticketList -> redNumber 红球号码
-   * @param ticketList -> blueNumber 篮球号码
-   * @param periodId 期数ID
-   */
-  async addTicket(req: Request, res: JwtAuthResponse): Promise<void> {
-    let batchList: Array<TicketDocument | any> = [];
-    let { ticketList, periodId, orderId } = req.body;
-    let { userId } = res.authUser;
-    let totalPrice = 0;
-    try {
-      ticketList.forEach((item: any) => {
-        batchList.push({
-          redNumber: item.redNumber,
-          blueNumber: item.blueNumber,
-          userId,
-          periodId,
-        });
-        totalPrice += getTicketPrice(
-          item.redNumber.split(",").length,
-          item.blueNumber.split(",").length,
-          2
-        );
-      });
-
-      //生成订单 + 计算订单金额
-      let orderRes = await OrderDao.addOrder({
-        orderPrice: totalPrice,
-        userId,
-      });
-      batchList = batchList.map((item) => {
-        return {
-          ...item,
-          orderId: orderRes._id,
-        };
-      });
-      TicketDao.addTicketBatch(batchList).then(async (ticketInfo: any) => {
-        // 校验当前期是否已经开奖
-        // - 已开奖
-        //   - 直接验证中奖信息
-        // - 未开奖
-        //
-        let drawResult = await PeriodDao.getPeriodById(periodId);
-        let drawList: Array<any> = [];
-        if (drawResult.periodStatus === 1) {
-          for (let i = 0; i < ticketInfo.length; i++) {
-            let ticketItem = ticketInfo[i];
-            let redArr = ticketItem.redNumber.split(",");
-            let blueArr = ticketItem.blueNumber.split(",");
-            let result = verifyTicketResult(
-              redArr,
-              blueArr,
-              drawResult.lotteryResult.split(" ")
-            );
-            let drawTicket = await TicketDao.updateTicketStatus(
-              ticketItem._id,
-              result
-            );
-            if (result.status === 1) {
-              logger.info(
-                "[新增彩票] 更新一个中奖彩票 ticketId：" + ticketItem._id
-              );
-              drawList.push(drawTicket.toJSON());
-            }
-          }
-        }
-        this.ResponseSuccess(res, {
-          ticketList: ticketInfo,
-          drawList,
-        });
-      });
-    } catch (err) {
-      this.ResponseError(res, err);
-    }
   }
 
   /**
@@ -120,14 +39,14 @@ export default new (class ClientTicket extends Base {
         });
         totalPrice += itemPrice;
       });
-      this.ResponseSuccess(res, {
-        ticketList: result,
-        totalPrice,
-      });
     } catch (err) {
       console.log(err);
       this.ResponseError(res, err);
     }
+    this.ResponseSuccess(res, {
+      ticketList: result,
+      totalPrice,
+    });
   }
 
   /**

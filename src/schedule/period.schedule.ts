@@ -40,7 +40,7 @@ export default class PeriodSchedule {
         //1. 抓取开奖信息
         //2. 创建下期开奖信息
         logger.info(`执行开奖爬取`);
-        this.dataCrawler().then(() => {
+        this.dataCrawler().then((res) => {
           this.eventHandle();
         });
       }
@@ -56,9 +56,12 @@ export default class PeriodSchedule {
     //轮循数据库
     TicketController.pollingTicket();
     //自动追加下一期
-    PeriodController.addNextPeriodByAuto().catch((err)=>{
-      console.log("自动追加下期开奖Catch：", err.message)
-    })
+    PeriodController.addNextPeriodByAuto().catch((err) => {
+      //库中可能已存在下一期
+      if (err.code !== 11000) {
+        console.log("自动追加下期开奖Catch：", err.message);
+      }
+    });
   };
   /**
    * 抓取体彩大乐透最后一期开奖信息
@@ -96,7 +99,7 @@ export default class PeriodSchedule {
               if (err.code === 11000) {
                 let res = await PeriodController.getPeriodByNum(
                   lottoData.lotteryDrawNum
-                );                
+                );
                 return resolve(res);
               }
               //更新失败

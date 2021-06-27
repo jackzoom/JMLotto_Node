@@ -1,7 +1,8 @@
 import { Router } from "express";
 const router: Router = Router({ caseSensitive: true });
 import User from "./user.router";
-import Auth from "./Auth.router";
+import Auth from "./auth.router";
+import Wx from "./wx.router";
 
 /**
  * @swagger
@@ -36,5 +37,6 @@ import Auth from "./Auth.router";
  */
 router.use("/user", User);
 router.use("/auth", Auth);
+router.use("/wx", Wx);
 
 export default router;

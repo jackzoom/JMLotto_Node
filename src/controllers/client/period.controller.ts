@@ -66,33 +66,37 @@ export default new (class ClientPeriod extends Base {
    * @param res
    */
   async getPeriodDetail(req: Request, res: Response) {
-
     let { periodId } = req.query;
-    PeriodDao.getPeriodById(periodId as string).then((data: any) => {
-      this.ResponseSuccess(res, data);
-    }).catch((err: any) => {
-      this.ResponseError(res, err)
-    }
-    )
+    PeriodDao.getPeriodById(periodId as string)
+      .then((data: any) => {
+        this.ResponseSuccess(res, data);
+      })
+      .catch((err: any) => {
+        this.ResponseError(res, err);
+      });
   }
-
 
   /**
    * 自动添加下期开奖信息
    */
   async addNextPeriodByAuto() {
     return new Promise(async (resolve, reject) => {
-      try{
+      try {
         let lastPeriod = await periodDao.getLastPeriod();
+        if (lastPeriod.periodStatus === 0) {
+          return resolve(lastPeriod);
+        }
+        let lastNum = (lastPeriod.lotteryNumber + 1) as number;
+        let nextIsExist = await PeriodDao.getPeriodByNum(lastNum);
+        if (nextIsExist) return resolve(nextIsExist);
         let newPeriod = await PeriodDao.addPeriod({
-          lotteryNumber: (lastPeriod.lotteryNumber + 1) as number,
+          lotteryNumber: lastNum,
           lotteryTime: getNextDrawDate(),
         });
         resolve(newPeriod);
-      }catch(err){
-        reject(err)
+      } catch (err) {
+        reject(err);
       }
-      
     });
   }
 
@@ -117,7 +121,7 @@ export default new (class ClientPeriod extends Base {
         .then(async (res: any) => {
           //更新失败
           if (!res) {
-            let newDoc = await periodDao.addPeriod(drawParam);           
+            let newDoc = await periodDao.addPeriod(drawParam);
             return resolve(newDoc);
           }
           resolve(res);

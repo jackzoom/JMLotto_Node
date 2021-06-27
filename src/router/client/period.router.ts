@@ -33,6 +33,8 @@ const router: Router = Router({ caseSensitive: true });
  *         in: header
  *         required: false
  *         type: string
+ *     security:
+ *       - ClientApiAuth: []
  *     responses:
  *       200:
  *         description: success
@@ -77,6 +79,8 @@ router.get("/", ClientPeriod.getPeriodList);
  *         in: query
  *         required: true
  *         type: string
+ *     security:
+ *       - ClientApiAuth: []
  *     responses:
  *       200:
  *         description: success

@@ -12,7 +12,7 @@ export default function verifyToken(whiteList: Array<string>, scope?: string) {
     try {
       const token = req.headers[ApiHeaderKey] as string;
       const user = (await VerifyToken(token)) as any;
-      // console.log("verifyToken：", user);
+      console.log("verifyToken：", user);
       if (user.scope !== scope) {
         return ResponseError(
           res,

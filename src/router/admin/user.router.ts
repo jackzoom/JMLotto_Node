@@ -46,6 +46,8 @@ const router: Router = Router({ caseSensitive: true });
  *         in: header
  *         required: false
  *         type: string
+ *     security:
+ *       - AdminApiAuth: []
  *     responses:
  *       200:
  *         description: success
@@ -84,6 +86,8 @@ router.get("/", AdminUser.getUserList);
  *         in: header
  *         required: false
  *         type: string
+ *     security:
+ *       - AdminApiAuth: []
  *     responses:
  *       200:
  *         description: success
@@ -167,8 +171,8 @@ router.post("/insertTestUser", AdminUser.insertTestUser);
  *
  * /admin/user/{userId}:
  *   delete:
- *     summary: 添加测试用户
- *     description: 添加测试用户
+ *     summary: 删除用户
+ *     description: 根据用户ID删除指定用户
  *     tags:
  *       - name: Admin
  *         description: 用户管理
@@ -185,6 +189,8 @@ router.post("/insertTestUser", AdminUser.insertTestUser);
  *         in: path
  *         required: true
  *         type: string
+ *     security:
+ *       - AdminApiAuth: []
  *     responses:
  *       200:
  *         description: success
@@ -194,5 +200,5 @@ router.post("/insertTestUser", AdminUser.insertTestUser);
  *               allOf:
  *                 - $ref: '#/components/schemas/Basic'
  */
-router.delete('/:userId', AdminUser.deleteUser)
+router.delete("/:userId", AdminUser.deleteUser);
 export default router;

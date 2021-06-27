@@ -11,14 +11,16 @@ const options: swaggerJSDoc.OAS3Options = {
       description: "API Service",
       version: PackageJSON.version || "1.0.0",
     },
+    components: {
+      securitySchemes: {
+        AdminApiAuth: { type: "apiKey", in: "header", name: "token" },
+        ClientApiAuth: { type: "apiKey", in: "header", name: "token" },
+      },
+    },
     servers: [
       {
         url: `${process.env.SERVER_URL}/api/v1`,
-        description: "Localhost",
-      },
-      {
-        url: `${process.env.SERVER_URL_PROD}/api/v1`,
-        description: "Production",
+        description: process.env.NODE_ENV,
       },
     ],
   },

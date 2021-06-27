@@ -45,17 +45,18 @@ export default new (class UserDao<T> implements DBI<T> {
       User.findOne({
         account,
         isAdmin,
-        isDelete: 0
-      }).select("+password").then(userDoc => {
-        if (!userDoc) return reject("账户登录失败")
-        userDoc.comparePassword(password, (err, isMatch) => {
-          err && logger.error("账户登录异常：", err)
-          if (!isMatch || err) return reject("账户登录失败")
-          resolve(userDoc);
-        })
+        isDelete: 0,
       })
-    })
-
+        .select("+password")
+        .then((userDoc) => {
+          if (!userDoc) return reject("账户登录失败");
+          userDoc.comparePassword(password, (err, isMatch) => {
+            err && logger.error("账户登录异常：", err);
+            if (!isMatch || err) return reject("账户登录失败");
+            resolve(userDoc);
+          });
+        });
+    });
   }
   /**
    * 获取所有用户
@@ -72,11 +73,11 @@ export default new (class UserDao<T> implements DBI<T> {
     return UserModel.save();
   }
   updateUser(userId: string, userInfo: UserInterface): any {
-    return User.findByIdAndUpdate(userId, userInfo)
+    return User.findByIdAndUpdate(new ObjectId(userId), userInfo);
   }
   deleteUser(userId: string): any {
-    return User.findByIdAndUpdate(userId, {
-      isDelete: 1
-    })
+    return User.findByIdAndUpdate(new ObjectId(userId), {
+      isDelete: 1,
+    });
   }
 })();

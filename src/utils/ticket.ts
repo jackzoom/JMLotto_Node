@@ -124,8 +124,8 @@ export function getNextDrawDate(): Date {
       res = moment().day(6);
       break;
     case 6:
-    case 7:
-      res = moment().day(8);
+    case 0:
+      res = moment().day(1);
   }
   return res.hour(20).minute(50).second(0).millisecond(0).toDate();
 }

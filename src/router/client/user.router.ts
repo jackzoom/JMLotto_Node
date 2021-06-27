@@ -120,6 +120,8 @@ router.post("/weappLogin", ClientUser.weappLogin);
  *         in: header
  *         required: false
  *         type: string
+ *     security:
+ *       - ClientApiAuth: []
  *     responses:
  *       200:
  *         description: success
