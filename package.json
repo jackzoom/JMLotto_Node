@@ -8,8 +8,8 @@
   },
   "author": "jackzoom",
   "scripts": {
-    "start": "cross-env --mode=development ts-node ./src/server",
-    "start:local": "cross-env --mode=localhost ts-node ./src/server",
+    "start": "cross-env --mode=development ts-node ./src/server.ts",
+    "start:local": "cross-env --mode=localhost ts-node ./src/server.ts",
     "serve": "nodemon",
     "build": "tsc",
     "test": "jest --forceExit --coverage --verbose"
@@ -20,7 +20,7 @@
     "bluebird": "3.7.2",
     "connect-mongo": "4.4.0",
     "cross-env": "^7.0.3",
-    "dotenv": "8.2.0",
+    "dotenv": "^10.0.0",
     "errorhandler": "1.5.1",
     "express": "4.17.1",
     "express-session": "^1.17.1",

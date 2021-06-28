@@ -1,16 +1,23 @@
 import { DBInterface, EnvInterface } from "../interface/config.interface";
 import logger from "../utils/logger";
-import dotenv from "dotenv";
+import * as dotenv from 'dotenv'
 import fs from "fs";
 
 if (fs.existsSync(".env")) {
   // logger.debug("Using .env file to supply config environment variables");
-  dotenv.config({ path: `.env` });
+  dotenv.config({
+    path: '.env', encoding: "utf8",
+    debug: true
+  });
   const ENVNAME = process.env["mode"];
-  if (fs.existsSync(`.env.${ENVNAME}`))
-    dotenv.config({ path: `.env.${ENVNAME}` });
+  if (fs.existsSync(`.env.${ENVNAME}`)) {
+    dotenv.config({
+      path: `.env.${ENVNAME}`, encoding: "utf8",
+      debug: true,
+    });
+  }
 }
-
+console.log("启动：", process.env["SESSION_SECRET"])
 const ENVIRONMENT = process.env["NODE_ENV"];
 const SESSION_SECRET = process.env["SESSION_SECRET"];
 const MONGODB_URI = process.env["MONGODB_URI"];
