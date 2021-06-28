@@ -4,6 +4,7 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
+        "allowJs": true,
         "target": "es6",
         "noImplicitAny": true,
         "moduleResolution": "node",

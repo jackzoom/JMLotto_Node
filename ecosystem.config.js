@@ -1,10 +1,7 @@
 module.exports = {
   apps: [{
     name: 'JMLotto',
-    script: 'src/server.ts',
-    interpreter: "node_modules/.bin/ts-node",
-    interpreter_args: "-P src -r tsconfig-paths/register",
-    max_memory_restart: 8,
+    script: './dist/src/server.js',
     error_file: "./pm2logs/app-err.log",
     out_file: "./pm2logs/app-out.log",
     log_date_format: "YYYY-MM-DD HH:mm:ss",
