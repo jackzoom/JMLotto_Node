@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 
 interface DBI<T> {
   getUserById(userId: string): Promise<UserDocument>;
+  getUserByOpenId(openId: string, sessionKey: string): Promise<UserDocument>;
   getUserByAccount(account: string, password: string, isAdmin: number): any;
   getUserList: any;
   addUser(userInfo: UserInterface): Promise<UserDocument>;
@@ -35,6 +36,16 @@ export default new (class UserDao<T> implements DBI<T> {
     return User.findById({
       _id: new ObjectId(userId),
     }).select("+account");
+  }
+  getUserByOpenId(openId: string, sessionKey: string): any {
+    return User.findOneAndUpdate(
+      {
+        openId,
+      },
+      {
+        sessionKey,
+      }
+    ).select("+account");
   }
   getUserByAccount(
     account: string,
@@ -69,6 +80,7 @@ export default new (class UserDao<T> implements DBI<T> {
     }).select("+account");
   }
   addUser(userInfo: UserInterface): Promise<UserDocument> {
+    console.log("插入用户：", userInfo);
     let UserModel = new User(userInfo);
     return UserModel.save();
   }

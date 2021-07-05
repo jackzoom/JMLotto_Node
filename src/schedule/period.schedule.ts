@@ -20,6 +20,7 @@ import { PeriodDocument } from "../models/period.model";
 // └───────────────────────── second (0 - 59, OPTIONAL)
 
 // 每周一、三、六 20:25 爬取开奖信息
+// 转换时间：UTC -> Beijing = -8  =>> 12:50
 export default class PeriodSchedule {
   jobId: string = getGUID();
   job: any;
@@ -35,7 +36,7 @@ export default class PeriodSchedule {
   start(jobId: string) {
     return scheduleJob(
       jobId,
-      { hour: "20", minute: "50", dayOfWeek: [1, 3, 6] },
+      { hour: "12", minute: "50", dayOfWeek: [1, 3, 6] },
       () => {
         //1. 抓取开奖信息
         //2. 创建下期开奖信息

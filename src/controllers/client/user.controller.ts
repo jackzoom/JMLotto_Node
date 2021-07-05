@@ -33,18 +33,31 @@ export default new (class AdminUser extends Base {
     //    - 注册用户
     //    - 返回用户信息
     let { code } = req.body;
+    let result;
     let WxLoginUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${ApiWxAppletAppID}&secret=${ApiWxAppletSecret}&js_code=${code}&grant_type=authorization_code`;
     HTTP.get(WxLoginUrl, {
       json: true,
     })
-      .then((wxRes) => {
-        if (wxRes.errcode !== 0)
+      .then(async (wxRes) => {
+        if (wxRes.errcode === 0) {
+          console.log("微信登录异常：", wxRes);
           return this.ResponseError(res, {
             message: `微信异常：${wxRes.errmsg}`,
           });
-        let { openId, session_key } = wxRes;
+        }
+        let { openid, session_key } = wxRes;
+        //验证OpenId是否存在
+        result = await UserDao.getUserByOpenId(openid, session_key);
+        if (result) {
+          return this.ResponseSuccess(res, {
+            token: SignToken({
+              userId: new ObjectId(result._id),
+              scope: AppletLogin,
+            }),
+          });
+        }
         let userDoc = {
-          openId,
+          openId: openid,
           sessionKey: session_key,
         };
         UserDao.addUser({
@@ -54,7 +67,7 @@ export default new (class AdminUser extends Base {
             userId: new ObjectId(userRes.userId),
             scope: AppletLogin,
           });
-          this.ResponseSuccess(res, { ...userRes, token });
+          this.ResponseSuccess(res, { token });
         });
       })
       .catch((err) => {
