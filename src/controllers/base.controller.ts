@@ -12,7 +12,11 @@ import { Response } from "express";
  */
 export default class Base {
   ResponseCatch: (res: Response, error?: HttpResponse.Exception) => void;
-  ResponseError: (res: Response, error?: HttpResponse.Exception) => void;
+  ResponseError: (
+    res: Response,
+    error?: HttpResponse.Exception,
+    statusCode?: number
+  ) => void;
   ResponseSuccess: (res: Response, data?: any) => void;
   constructor() {
     this.ResponseCatch = ResponseCatch;

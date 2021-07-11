@@ -1,7 +1,7 @@
 /**
  * 彩票号码表
  */
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import mongoose from "mongoose";
 import { formatTime } from "../utils";
 
@@ -10,9 +10,9 @@ export type TicketDocument = mongoose.Document & {
   blueNumber: string;
   ticketStatus: number;
   verifyDate: Date;
-  periodId: ObjectId;
-  userId: ObjectId;
-  orderId: ObjectId;
+  periodId: Types.ObjectId;
+  userId: Types.ObjectId;
+  orderId: Types.ObjectId;
 };
 
 const ticketSchema = new mongoose.Schema<TicketDocument>(
@@ -51,7 +51,7 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
      * @ref Period
      */
     periodId: {
-      type: ObjectId,
+      type: Types.ObjectId,
       ref: "Period",
     },
     /**
@@ -60,14 +60,14 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
      * @refs User
      */
     userId: {
-      type: ObjectId,
+      type: Types.ObjectId,
       ref: "User",
     },
     /**
      * 订单编号
      */
     orderId: {
-      type: ObjectId,
+      type: Types.ObjectId,
       ref: "Order",
     },
   },

@@ -2,13 +2,13 @@
  * 彩票订单记录
  */
 
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import mongoose from "mongoose";
 import { formatTime } from "../utils";
 
 export type OrderDocument = mongoose.Document & {
   orderPrice: string;
-  userId: ObjectId;
+  userId: Types.ObjectId;
 };
 
 const OrderSchema = new mongoose.Schema<OrderDocument>(
@@ -18,7 +18,7 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
      */
     orderPrice: Number,
     userId: {
-      type: ObjectId,
+      type: Types.ObjectId,
       ref: "User",
     },
   },

@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import { Order, OrderDocument } from "../models/order.model";
 
 interface OrderFields {
@@ -29,7 +29,7 @@ export default new (class OrderDao<T> implements DBI<T> {
     return Order.aggregate([
       {
         $match: {
-          userId: new ObjectId(userId),
+          userId: Types.ObjectId(userId),
         },
       },
       {
@@ -55,7 +55,7 @@ export default new (class OrderDao<T> implements DBI<T> {
   }
   getOrderById(orderId: string): any {
     return Order.findOne({
-      _id: new ObjectId(orderId),
+      _id: Types.ObjectId(orderId),
     });
   }
 })();

@@ -4,25 +4,28 @@ import Base from "../base.controller";
 import UserDao from "../../dao/user.dao";
 import { SignToken } from "../../utils/token";
 import { AppletLogin } from "../../config/scope.config";
-import { ApiWxAppletAppID, ApiWxAppletSecret } from "../../config/api.config";
+import {
+  ApiHttpCode,
+  ApiWxAppletAppID,
+  ApiWxAppletSecret,
+} from "../../config/api.config";
 import { JwtAuthResponse } from "../../interface/auth.interface";
 import { UserDocument } from "../../models/user.model";
-import { ObjectId } from "mongodb";
-
+import { Types } from "mongoose";
 export default new (class AdminUser extends Base {
   constructor() {
     super();
     this.weappLogin = this.weappLogin.bind(this);
     this.accountLogin = this.accountLogin.bind(this);
     this.getUser = this.getUser.bind(this);
+    this.updateUser = this.updateUser.bind(this);
   }
 
   /**
    * 小程序登录 Weapp Login
    * @route client/user/weappLogin
    * @param code
-   * @param iv 微信声明
-   * @param encryptedData 微信加密数据
+   * @param userInfo 微信用户信息
    */
   async weappLogin(req: Request, res: Response): Promise<void> {
     //1.根据Code换取小程序OpenId
@@ -32,7 +35,7 @@ export default new (class AdminUser extends Base {
     //  - 不存在
     //    - 注册用户
     //    - 返回用户信息
-    let { code } = req.body;
+    let { code, userInfo } = req.body;
     let result;
     let WxLoginUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${ApiWxAppletAppID}&secret=${ApiWxAppletSecret}&js_code=${code}&grant_type=authorization_code`;
     HTTP.get(WxLoginUrl, {
@@ -51,7 +54,7 @@ export default new (class AdminUser extends Base {
         if (result) {
           return this.ResponseSuccess(res, {
             token: SignToken({
-              userId: new ObjectId(result._id),
+              userId: result._id,
               scope: AppletLogin,
             }),
           });
@@ -59,15 +62,23 @@ export default new (class AdminUser extends Base {
         let userDoc = {
           openId: openid,
           sessionKey: session_key,
+          avatarUrl: userInfo.avatarUrl,
+          nickName: userInfo.nickName,
+          gender: userInfo.gender,
+          country: userInfo.country,
+          province: userInfo.province,
+          city: userInfo.city,
+          language: userInfo.language
         };
         UserDao.addUser({
           ...userDoc,
         }).then((userRes: any) => {
           let token = SignToken({
-            userId: new ObjectId(userRes.userId),
+            userId: userRes._id,
             scope: AppletLogin,
           });
-          this.ResponseSuccess(res, { token });
+          console.log("微信注册用户：", userRes);
+          this.ResponseSuccess(res, { token, nickName: userRes.nickName });
         });
       })
       .catch((err) => {
@@ -90,7 +101,7 @@ export default new (class AdminUser extends Base {
             message: "账户密码验证错误",
           });
         let token = SignToken({
-          userId: new ObjectId(userRes._id),
+          userId: userRes._id,
           scope: AppletLogin,
         });
 
@@ -113,7 +124,58 @@ export default new (class AdminUser extends Base {
    */
   async getUser(req: Request, res: JwtAuthResponse): Promise<void> {
     UserDao.getUserById(res.authUser.userId).then((doc: UserDocument) => {
+      if (!doc) {
+        return this.ResponseError(
+          res,
+          {
+            message: "用户不存在",
+          },
+          ApiHttpCode.AuthFail
+        );
+      }
       this.ResponseSuccess(res, doc);
     });
+  }
+
+  /**
+   * 更新用户信息
+   * @route /client/user/update
+   * @header token
+   */
+  async updateUser(req: Request, res: JwtAuthResponse): Promise<void> {
+    let bodys = req.body;
+    let params = {
+      avatarUrl: bodys.avatarUrl,
+      nickName: bodys.nickName,
+      gender: bodys.gender,
+      country: bodys.country,
+      province: bodys.province,
+      city: bodys.city,
+      language: bodys.language,
+      phoneNumber: bodys.phoneNumber,
+      countryCode: bodys.countryCode,
+      // openId: string;
+      // unionId: string;
+      // password: string;
+      // sessionKey: string;
+      // lastLogin: Date;
+      // parentId: string;
+      // isAdmin: number;
+      // isDelete: number;
+    };
+    UserDao.updateUser(res.authUser.userId, params).then(
+      (doc: UserDocument) => {
+        if (!doc) {
+          return this.ResponseError(
+            res,
+            {
+              message: "用户不存在",
+            },
+            ApiHttpCode.AuthFail
+          );
+        }
+        this.ResponseSuccess(res, doc);
+      }
+    );
   }
 })();

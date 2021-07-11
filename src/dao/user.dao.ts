@@ -1,6 +1,6 @@
 import logger from "../utils/logger";
 import { User, UserDocument } from "../models/user.model";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 interface DBI<T> {
   getUserById(userId: string): Promise<UserDocument>;
@@ -8,7 +8,7 @@ interface DBI<T> {
   getUserByAccount(account: string, password: string, isAdmin: number): any;
   getUserList: any;
   addUser(userInfo: UserInterface): Promise<UserDocument>;
-  updateUser(userId: string, userInfo: UserInterface): Promise<UserDocument>;
+  updateUser(userId: string, userInfo: object): Promise<UserDocument>;
   deleteUser(userId: string): Promise<any>;
 }
 
@@ -32,11 +32,24 @@ interface UserInterface {
 }
 
 export default new (class UserDao<T> implements DBI<T> {
+  /**
+   * 根据用户ID
+   * @summary 获取用户信息
+   * @param userId
+   * @returns 
+   */
   getUserById(userId: string): any {
     return User.findById({
-      _id: new ObjectId(userId),
+      _id: Types.ObjectId(userId),
     }).select("+account");
   }
+  /**
+   * 根据微信OpenId
+   * @summary 获取用户信息
+   * @param openId
+   * @param sessionKey
+   * @returns
+   */
   getUserByOpenId(openId: string, sessionKey: string): any {
     return User.findOneAndUpdate(
       {
@@ -47,6 +60,14 @@ export default new (class UserDao<T> implements DBI<T> {
       }
     ).select("+account");
   }
+  /**
+   * 根据账户密码
+   * @summary 获取用户信息
+   * @param account
+   * @param password
+   * @param isAdmin
+   * @returns
+   */
   getUserByAccount(
     account: string,
     password: string,
@@ -79,16 +100,32 @@ export default new (class UserDao<T> implements DBI<T> {
       isAdmin,
     }).select("+account");
   }
+  /**
+   * 添加用户
+   * @param userInfo 
+   * @returns 
+   */
   addUser(userInfo: UserInterface): Promise<UserDocument> {
     console.log("插入用户：", userInfo);
     let UserModel = new User(userInfo);
     return UserModel.save();
   }
-  updateUser(userId: string, userInfo: UserInterface): any {
-    return User.findByIdAndUpdate(new ObjectId(userId), userInfo);
+  /**
+   * 根据用户ID更新用户信息
+   * @param userId 
+   * @param userInfo 
+   * @returns 
+   */
+  updateUser(userId: string, userInfo: object): any {
+    return User.findByIdAndUpdate(Types.ObjectId(userId), userInfo);
   }
+  /**
+   * 根据用户ID删除用户
+   * @param userId 
+   * @returns 
+   */
   deleteUser(userId: string): any {
-    return User.findByIdAndUpdate(new ObjectId(userId), {
+    return User.findByIdAndUpdate(Types.ObjectId(userId), {
       isDelete: 1,
     });
   }
