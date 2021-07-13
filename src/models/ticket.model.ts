@@ -55,6 +55,14 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
       ref: "Period",
     },
     /**
+     * 投注倍数
+     * @default 0
+     */
+    multiple: {
+      type: Number,
+      default: 0,
+    },
+    /**
      * 用户ID
      * @type {ObjectId}
      * @refs User

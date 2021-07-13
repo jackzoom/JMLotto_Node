@@ -100,7 +100,7 @@ router.post("/weappLogin", ClientUser.weappLogin);
  *                           type: string
  *                           description: 用户名称
  */
- router.post("/accountLogin", ClientUser.accountLogin);
+router.post("/accountLogin", ClientUser.accountLogin);
 
 /**
  * @swagger
@@ -142,5 +142,49 @@ router.post("/weappLogin", ClientUser.weappLogin);
  *                           description: 用户名称
  */
 router.get("/getUser", ClientUser.getUser);
+
+/**
+ * @swagger
+ *
+ * /client/user/aggregate:
+ *   get:
+ *     summary: 获取用户聚合数据
+ *     description: 根据Token获取用户聚合数据
+ *     tags:
+ *       - name: Client
+ *         description: 用户管理
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: auth token.
+ *         in: header
+ *         required: false
+ *         type: string
+ *     security:
+ *       - ClientApiAuth: []
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Basic'
+ *                 - properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         totalOrder:
+ *                           type: number
+ *                           description: 用户总投注
+ *                         totalBill:
+ *                           type: float
+ *                           description: 用户总账单
+ *                         totalWinning:
+ *                           type: number
+ *                           description: 用户总中奖次数
+ */
+router.get("/aggregate", ClientUser.getUserAggregate)
 
 export default router;

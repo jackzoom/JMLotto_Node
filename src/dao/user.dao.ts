@@ -6,7 +6,8 @@ interface DBI<T> {
   getUserById(userId: string): Promise<UserDocument>;
   getUserByOpenId(openId: string, sessionKey: string): Promise<UserDocument>;
   getUserByAccount(account: string, password: string, isAdmin: number): any;
-  getUserList: any;
+  getUserList(isAdmin: number): any;
+  getUserAggregate(userId: string): any;
   addUser(userInfo: UserInterface): Promise<UserDocument>;
   updateUser(userId: string, userInfo: object): Promise<UserDocument>;
   deleteUser(userId: string): Promise<any>;
@@ -100,6 +101,51 @@ export default new (class UserDao<T> implements DBI<T> {
       isAdmin,
     }).select("+account");
   }
+  /**
+   * 获取用户聚合数据
+   * @param userId
+   */
+  getUserAggregate(userId: string): any {
+    return User.aggregate([
+      {
+        $match: {
+          _id: Types.ObjectId(userId)
+        }
+      },
+      {
+        $lookup: {
+          from: "orders", localField: "_id", foreignField: "userId", as: "orders"
+        }
+      }, {
+        $lookup: {
+          from: "tickets", localField: "_id", foreignField: "userId", as: "ticketsTotal"
+        }
+      }, {
+        $lookup: {
+          from: "tickets",
+          as: "tickets",
+          pipeline: [
+            {
+              $match: {
+                userId: Types.ObjectId(userId),
+                ticketStatus: 1 //0：待开奖 1：已中奖 2：未中奖
+              }
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalOrder: { $size: "$orders" }, //累计投注订单数          
+          totalWinning: { $size: "$tickets" }, //累计中奖次数
+          totalBill: { $sum: "$orders.orderPrice" }, //累计账单总金额
+          totalTicket: { $sum: ["$ticketsTotal.multiple"] },//累计投注彩票数
+        }
+      }
+    ])
+  }
+
   /**
    * 添加用户
    * @param userInfo 

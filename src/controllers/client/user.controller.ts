@@ -18,6 +18,7 @@ export default new (class AdminUser extends Base {
     this.weappLogin = this.weappLogin.bind(this);
     this.accountLogin = this.accountLogin.bind(this);
     this.getUser = this.getUser.bind(this);
+    this.getUserAggregate = this.getUserAggregate.bind(this);
     this.updateUser = this.updateUser.bind(this);
   }
 
@@ -111,9 +112,7 @@ export default new (class AdminUser extends Base {
         });
       })
       .catch((err: any) => {
-        this.ResponseError(res, {
-          message: err,
-        });
+        this.ResponseError(res, err);
       });
   }
 
@@ -134,8 +133,24 @@ export default new (class AdminUser extends Base {
         );
       }
       this.ResponseSuccess(res, doc);
-    });
+    }).catch((err: any) => {
+      this.ResponseError(res, err)
+    })
   }
+
+  /**
+   * 获取用户聚合数据
+   * @route /client/user/aggregate
+   * @header token
+   */
+  async getUserAggregate(req: Request, res: JwtAuthResponse): Promise<void> {
+    UserDao.getUserAggregate(res.authUser.userId).then((doc: any) => {
+      this.ResponseSuccess(res, doc[0]);
+    }).catch((err: any) => {
+      this.ResponseError(res, err)
+    })
+  }
+
 
   /**
    * 更新用户信息
@@ -176,6 +191,8 @@ export default new (class AdminUser extends Base {
         }
         this.ResponseSuccess(res, doc);
       }
-    );
+    ).catch((err: any) => {
+      this.ResponseError(res, err)
+    })
   }
 })();
