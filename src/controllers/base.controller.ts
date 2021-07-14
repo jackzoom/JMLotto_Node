@@ -4,6 +4,7 @@ import {
   ResponseCatch,
   ResponseError,
   ResponseSuccess,
+  ResponsePaging
 } from "../utils/response.utils";
 import { Response } from "express";
 
@@ -18,9 +19,11 @@ export default class Base {
     statusCode?: number
   ) => void;
   ResponseSuccess: (res: Response, data?: any) => void;
+  ResponsePaging: (res: Response, data: HttpResponse.Paging) => void;
   constructor() {
     this.ResponseCatch = ResponseCatch;
     this.ResponseError = ResponseError;
     this.ResponseSuccess = ResponseSuccess;
+    this.ResponsePaging = ResponsePaging;
   }
 }

@@ -55,7 +55,7 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
     lotteryNumber: {
       type: Number,
       unique: true,
-    }    
+    }
   },
   {
     timestamps: true,
@@ -66,6 +66,8 @@ const periodSchema = new mongoose.Schema<PeriodDocument>(
         delete ret.__v;
         ret.createdAt && (ret.createdAt = formatTime(ret.createdAt));
         ret.updatedAt && (ret.updatedAt = formatTime(ret.updatedAt));
+        ret.lotteryRealTime && (ret.lotteryRealTime = formatTime(ret.lotteryRealTime));
+        ret.lotteryTime && (ret.lotteryTime = formatTime(ret.lotteryTime));        
         return ret;
       },
     },

@@ -97,4 +97,39 @@ router.get("/", ClientPeriod.getPeriodList);
  */
 router.get("/detail", ClientPeriod.getPeriodDetail);
 
+/**
+ * @swagger
+ *
+ * /client/period/last:
+ *   get:
+ *     summary: 最后一期开奖详情
+ *     description: 获取最后一期开奖详情
+ *     tags:
+ *       - name: Client
+ *         description: 彩票管理
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: auth token.
+ *         in: header
+ *         required: false
+ *         type: string
+ *     security:
+ *       - ClientApiAuth: []
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Basic'
+ *                 - properties:
+ *                     data:
+ *                       type: object
+ *                       $ref: '#/definitions/PeriodData'
+ *
+ */
+router.get("/last", ClientPeriod.getLastPeriod);
 export default router;

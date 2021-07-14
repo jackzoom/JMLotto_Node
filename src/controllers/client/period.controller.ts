@@ -39,6 +39,7 @@ export default new (class ClientPeriod extends Base {
     super();
     this.getPeriodList = this.getPeriodList.bind(this);
     this.getPeriodDetail = this.getPeriodDetail.bind(this);
+    this.getLastPeriod = this.getLastPeriod.bind(this);
     this.addNextPeriodByAuto = this.addNextPeriodByAuto.bind(this);
     this.updateDrawResult = this.updateDrawResult.bind(this);
   }
@@ -47,14 +48,21 @@ export default new (class ClientPeriod extends Base {
    * 获取周期列表 GetPeriodList
    * @group ClientPeriod
    * @route GET /client/period
-   * @param req
-   * @param res
+   * @header token
+   * @param pageNum
+   * @param pageSize
    */
   async getPeriodList(req: Request, res: Response) {
     let pageNum = (req.query.pageNum || 1) as number;
     let pageSize = (req.query.pageSize || 20) as number;
     PeriodDao.getPeriodList(pageNum, pageSize).then((data: any) => {
-      this.ResponseSuccess(res, data);
+      this.ResponsePaging(res, {
+        pageSize: 0,
+        totalElement: 0,
+        totalPages: 0,
+        currentPage: 0,
+        content: data
+      });
     });
   }
 
@@ -62,12 +70,28 @@ export default new (class ClientPeriod extends Base {
    * 获取周期详情 GetPeriodDetail
    * @group ClientPeriod
    * @route GET /client/period/detail
-   * @param req
-   * @param res
+   * @header token
+   * @param periodId
    */
   async getPeriodDetail(req: Request, res: Response) {
     let { periodId } = req.query;
     PeriodDao.getPeriodById(periodId as string)
+      .then((data: any) => {
+        this.ResponseSuccess(res, data);
+      })
+      .catch((err: any) => {
+        this.ResponseError(res, err);
+      });
+  }
+
+  /**
+   * 获取最后一期开奖信息 GetLastPeriod
+   * @group ClientPeriod
+   * @route GET /client/period/last
+   * @header token
+   */
+  async getLastPeriod(req: Request, res: Response) {
+    PeriodDao.getLastPeriod()
       .then((data: any) => {
         this.ResponseSuccess(res, data);
       })
@@ -111,17 +135,19 @@ export default new (class ClientPeriod extends Base {
         lotteryRedNumber: drawResultArr.slice(0, -2).join(","),
         lotteryBlueNumber: drawResultArr.slice(-2).join(","),
         lotteryRealTime: new Date(drawInfo.drawTime),
-        lotteryNumber: drawInfo.drawNum,
         lotteryResult: drawInfo.drawResult,
         lotteryUnsortResult: drawInfo.drawResultUnsort,
         periodStatus: 1,
       };
       periodDao
-        .updatePeriod(drawParam)
+        .updatePeriod(drawInfo.drawNum, drawParam)
         .then(async (res: any) => {
           //更新失败
           if (!res) {
-            let newDoc = await periodDao.addPeriod(drawParam);
+            let newDoc = await periodDao.addPeriod({
+              lotteryNumber: drawInfo.drawNum,
+              ...drawParam
+            });
             return resolve(newDoc);
           }
           resolve(res);

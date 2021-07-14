@@ -1,10 +1,17 @@
 /**
- * Api Token White List
+ * Api Client Token White List
  */
-export const ApiWhiteList = [
-  ...["/user/weappLogin", "/user/accountLogin"],
-  ...["/auth/login", "/user/insertTestUser"],
-  ...["/wx/checkPushMsg"],
+export const ApiClientWhiteList = [
+  ...["/user/weappLogin", "/user/accountLogin"],//小程序登录
+  ...['/period', '/period/last', '/period/detail'],//小程序开奖周期
+];
+
+/**
+ * Api Admin Token White List
+ */
+export const ApiAdminWhiteList = [
+  ...["/auth/login", "/user/insertTestUser"],//管理员登录
+  ...["/wx/checkPushMsg"],//微信推送
 ];
 
 /**

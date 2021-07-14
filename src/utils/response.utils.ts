@@ -66,13 +66,22 @@ export const ResponseCatch = (
   logger.error(error);
 };
 
-export const ResponsePaging = () => {
-  let result: HttpResponse.Paging = {
+/**
+ * Response Success Paging
+ * @param res
+ * @param data
+ * @statusCode 200
+ */
+export const ResponsePaging = (res: Response, data: HttpResponse.Paging) => {
+  let defaults: HttpResponse.Paging = {
     content: [],
     currentPage: 0,
     pageSize: 20,
     totalElement: 0,
     totalPages: 0,
   };
-  return result;
+  ResponseSuccess(res, {
+    ...defaults,
+    ...data
+  });
 };

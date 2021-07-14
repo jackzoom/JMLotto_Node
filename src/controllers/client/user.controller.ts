@@ -24,6 +24,7 @@ export default new (class AdminUser extends Base {
 
   /**
    * 小程序登录 Weapp Login
+   * @group User
    * @route client/user/weappLogin
    * @param code
    * @param userInfo 微信用户信息
@@ -89,9 +90,8 @@ export default new (class AdminUser extends Base {
 
   /**
    * 账户密码登录
+   * @group User
    * @route POST /client/user/accountLogin
-   * @param req
-   * @param res
    */
   async accountLogin(req: Request, res: Response) {
     let { account, password } = req.body;
@@ -118,6 +118,7 @@ export default new (class AdminUser extends Base {
 
   /**
    * 获取用户信息
+   * @group User
    * @route /client/user/getUser
    * @header token
    */
@@ -140,6 +141,7 @@ export default new (class AdminUser extends Base {
 
   /**
    * 获取用户聚合数据
+   * @group User
    * @route /client/user/aggregate
    * @header token
    */
@@ -154,6 +156,7 @@ export default new (class AdminUser extends Base {
 
   /**
    * 更新用户信息
+   * @group User
    * @route /client/user/update
    * @header token
    */
