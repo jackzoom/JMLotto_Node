@@ -18,6 +18,7 @@ interface DBI<T> {
   getPeriodList(pageNum: number, pageSize: number): any;
   getLastPeriod(): any;
   getPeriodByNum(drawNum: number): any;
+  getPeriodTotal(match: any): any;
 }
 
 export default new (class PeriodDao<T> implements DBI<T> {
@@ -82,5 +83,13 @@ export default new (class PeriodDao<T> implements DBI<T> {
     return Period.findOne({
       lotteryNumber: drawNum,
     });
+  }
+  /**
+   * 统计开奖周期
+   * @param match 
+   * @returns 
+   */
+  getPeriodTotal(match: any): any {
+    return Period.find(match).countDocuments()
   }
 })();

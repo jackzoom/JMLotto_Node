@@ -22,9 +22,8 @@ declare namespace HttpResponse {
    */
   interface Paging {
     content: Array<Object>;
-    totalElement: number;
-    totalPages: number;
-    currentPage: number;
+    total: number;
+    pageNum: number;
     pageSize: number;
   }
 }

@@ -13,7 +13,7 @@ export function isDebug(): Boolean {
  * @param time
  */
 export function formatTime(time: Date): String {
-  return moment(time).format("YYYY-MM-DD HH:mm:SS");
+  return moment(time).format("YYYY-MM-DD HH:mm:ss");
 }
 
 /**

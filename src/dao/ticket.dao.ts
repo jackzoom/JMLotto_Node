@@ -7,6 +7,7 @@ interface DBI<T> {
   getTicektList(): any;
   getUnVerifyTicektList(periodId: string): any;
   updateTicketStatus(ticketId: string, rankData: RankResult): any;
+  getTicketListByPeriodId(periodId: string): any
 }
 
 export default new (class TicketDao<T> implements DBI<T> {
@@ -53,5 +54,14 @@ export default new (class TicketDao<T> implements DBI<T> {
       },
       { new: true }
     );
+  }
+  /**
+   * 获取指定开奖周期投注列表
+   * @param periodId 开奖周期ID
+   */
+  getTicketListByPeriodId(periodId: string): any {
+    return Ticket.find({
+      periodId: Types.ObjectId(periodId),
+    })
   }
 })();

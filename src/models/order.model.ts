@@ -8,6 +8,7 @@ import { formatTime } from "../utils";
 
 export type OrderDocument = mongoose.Document & {
   orderPrice: string;
+  periodId: string;
   userId: Types.ObjectId;
 };
 
@@ -17,6 +18,16 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
      * 订单金额
      */
     orderPrice: Number,
+    /**
+     * 开奖周期ID
+     */
+    periodId: {
+      type: Types.ObjectId,
+      ref: "Period",
+    },
+    /**
+     * 用户ID
+     */
     userId: {
       type: Types.ObjectId,
       ref: "User",

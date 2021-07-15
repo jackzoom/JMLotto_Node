@@ -73,15 +73,11 @@ export const ResponseCatch = (
  * @statusCode 200
  */
 export const ResponsePaging = (res: Response, data: HttpResponse.Paging) => {
-  let defaults: HttpResponse.Paging = {
-    content: [],
-    currentPage: 0,
-    pageSize: 20,
-    totalElement: 0,
-    totalPages: 0,
-  };
   ResponseSuccess(res, {
-    ...defaults,
-    ...data
+    content: data.content,
+    currentPage: +data.pageNum,
+    pageSize: +data.pageSize,
+    totalElement: data.total,
+    totalPages: Math.ceil(data.total / data.pageSize),
   });
 };

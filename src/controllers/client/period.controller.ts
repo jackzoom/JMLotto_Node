@@ -1,7 +1,7 @@
 import { Request, Response } from "express"; // express 申明文件定义的类型
 import Base from "../base.controller";
 import PeriodDao from "../../dao/period.dao";
-import periodDao from "../../dao/period.dao";
+import OrderDao from "../../dao/order.dao";
 import logger from "../../utils/logger";
 import { formatTime } from "../../utils";
 import { PeriodDocument } from "../../models/period.model";
@@ -55,15 +55,21 @@ export default new (class ClientPeriod extends Base {
   async getPeriodList(req: Request, res: Response) {
     let pageNum = (req.query.pageNum || 1) as number;
     let pageSize = (req.query.pageSize || 20) as number;
-    PeriodDao.getPeriodList(pageNum, pageSize).then((data: any) => {
-      this.ResponsePaging(res, {
-        pageSize: 0,
-        totalElement: 0,
-        totalPages: 0,
-        currentPage: 0,
-        content: data
+    let filterParam = {};
+    try {
+      PeriodDao.getPeriodList(pageNum, pageSize).then(async (data: any) => {
+        let total = await PeriodDao.getPeriodTotal(filterParam)
+        this.ResponsePaging(res, {
+          pageNum,
+          pageSize,
+          total,
+          content: data
+        });
       });
-    });
+    } catch (err: any) {
+      this.ResponseError(res, err);
+    }
+
   }
 
   /**
@@ -74,14 +80,33 @@ export default new (class ClientPeriod extends Base {
    * @param periodId
    */
   async getPeriodDetail(req: Request, res: Response) {
-    let { periodId } = req.query;
-    PeriodDao.getPeriodById(periodId as string)
-      .then((data: any) => {
-        this.ResponseSuccess(res, data);
-      })
-      .catch((err: any) => {
-        this.ResponseError(res, err);
-      });
+    let periodId = req.query.periodId as string;
+    try {
+      PeriodDao.getPeriodById(periodId)
+        .then(async (data: any) => {
+          OrderDao.getOrderListByPeriodId(periodId).then((orderList: any) => {
+            this.ResponseSuccess(res, {
+              ...data.toJSON(),
+              /** 个人投注信息 */
+              userBetting: null,
+              /** 用户投注列表 */
+              userBetList: orderList.map((item: any) => {
+                return {
+                  ...item,
+                  createTime: formatTime(item.createTime)
+                }
+              }),
+            });
+          })
+
+        })
+        .catch((err: any) => {
+          this.ResponseError(res, err);
+        });
+    } catch (err: any) {
+      this.ResponseError(res, err);
+    }
+
   }
 
   /**
@@ -91,13 +116,17 @@ export default new (class ClientPeriod extends Base {
    * @header token
    */
   async getLastPeriod(req: Request, res: Response) {
-    PeriodDao.getLastPeriod()
-      .then((data: any) => {
-        this.ResponseSuccess(res, data);
-      })
-      .catch((err: any) => {
-        this.ResponseError(res, err);
-      });
+    try {
+      PeriodDao.getLastPeriod()
+        .then((data: any) => {
+          this.ResponseSuccess(res, data);
+        })
+        .catch((err: any) => {
+          this.ResponseError(res, err);
+        });
+    } catch (err: any) {
+      this.ResponseError(res, err);
+    }
   }
 
   /**
@@ -106,7 +135,7 @@ export default new (class ClientPeriod extends Base {
   async addNextPeriodByAuto() {
     return new Promise(async (resolve, reject) => {
       try {
-        let lastPeriod = await periodDao.getLastPeriod();
+        let lastPeriod = await PeriodDao.getLastPeriod();
         if (lastPeriod.periodStatus === 0) {
           return resolve(lastPeriod);
         }
@@ -139,12 +168,12 @@ export default new (class ClientPeriod extends Base {
         lotteryUnsortResult: drawInfo.drawResultUnsort,
         periodStatus: 1,
       };
-      periodDao
+      PeriodDao
         .updatePeriod(drawInfo.drawNum, drawParam)
         .then(async (res: any) => {
           //更新失败
           if (!res) {
-            let newDoc = await periodDao.addPeriod({
+            let newDoc = await PeriodDao.addPeriod({
               lotteryNumber: drawInfo.drawNum,
               ...drawParam
             });
@@ -163,7 +192,7 @@ export default new (class ClientPeriod extends Base {
    */
   async getPeriodByNum(drawNum: number): Promise<PeriodDocument> {
     return new Promise(async (resolve, reject) => {
-      let periodRes = await periodDao.getPeriodByNum(drawNum);
+      let periodRes = await PeriodDao.getPeriodByNum(drawNum);
       resolve(periodRes);
     });
   }

@@ -3,6 +3,7 @@ import { Order, OrderDocument } from "../models/order.model";
 
 interface OrderFields {
   orderPrice: number;
+  periodId: string;
   userId: string;
 }
 
@@ -10,6 +11,7 @@ interface DBI<T> {
   addOrder(orderInfo: any): Promise<OrderDocument>;
   getOrderList(userId: string, pageNum: number, pageSize: number): any;
   getOrderById(orderId: string): any;
+  getOrderListByPeriodId(periodId: string): any
 }
 
 export default new (class OrderDao<T> implements DBI<T> {
@@ -57,5 +59,60 @@ export default new (class OrderDao<T> implements DBI<T> {
     return Order.findOne({
       _id: Types.ObjectId(orderId),
     });
+  }
+  /**
+   * 根据开奖周期ID，获取最近投注的10个订单
+   * @param periodId 
+   * @returns 
+   */
+  getOrderListByPeriodId(periodId: string): any {
+    return Order.aggregate([
+      {
+        $match: {
+          periodId: Types.ObjectId(periodId),
+        },
+      },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "orderId",
+          as: "ticketList",
+        },
+      }, {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userInfo",
+        }
+      }, {
+        $unwind: "$userInfo"
+      },
+      {
+        $addFields: {
+          nickName: "$userInfo.nickName",
+          avatarUrl: "$userInfo.avatarUrl",
+          userId: "$userInfo._id",
+          orderPrice: "$userInfo.orderPrice",
+          createTime: "$createdAt"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          nickName: 1,
+          avatarUrl: 1,
+          userId: 1,
+          createTime: 1,
+          totalTicket: { $size: "$ticketList" }, //累计投注订单数  
+        },
+      },
+    ])
+      .limit(10)
+      .skip(0)
+      .sort({
+        createTime: -1
+      })
   }
 })();

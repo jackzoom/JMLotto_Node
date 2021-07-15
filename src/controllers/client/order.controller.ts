@@ -26,9 +26,9 @@ export default new (class ClientOrder extends Base {
    */
   async addOrder(req: Request, res: JwtAuthResponse): Promise<void> {
     let batchList: Array<TicketDocument | any> = [];
-    let { ticketList, periodId, orderId } = req.body;
+    let { ticketList, periodId } = req.body;
     let { userId } = res.authUser;
-    let totalPrice = 0;
+    let totalPrice = 0;    
     try {
       ticketList.forEach((item: any) => {
         batchList.push({
@@ -47,6 +47,7 @@ export default new (class ClientOrder extends Base {
       //生成订单 + 计算订单金额
       let orderRes = await OrderDao.addOrder({
         orderPrice: totalPrice,
+        periodId,
         userId,
       });
       batchList = batchList.map((item) => {
