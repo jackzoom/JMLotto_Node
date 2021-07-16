@@ -63,7 +63,7 @@ export default new (class PeriodDao<T> implements DBI<T> {
       skipVal = pageNum > 1 ? limitVal * (pageNum - 1) : 0;
     return Period.find({}).sort({
       createdAt: -1
-    }).limit(Number(limitVal)).skip(Number(skipVal));
+    }).limit(+limitVal).skip(+skipVal);
   }
   /**
    * 获取最后一期开奖信息

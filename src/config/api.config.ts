@@ -3,7 +3,7 @@
  */
 export const ApiClientWhiteList = [
   ...["/user/weappLogin", "/user/accountLogin"],//小程序登录
-  ...['/period', '/period/last', '/period/detail'],//小程序开奖周期
+  ...['/period', '/period/ticket', '/period/last', '/period/detail'],//小程序开奖周期
 ];
 
 /**

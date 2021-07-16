@@ -132,4 +132,35 @@ router.get("/detail", ClientPeriod.getPeriodDetail);
  *
  */
 router.get("/last", ClientPeriod.getLastPeriod);
+
+/**
+ * @swagger
+ *
+ * /client/period/ticket:
+ *   get:
+ *     summary: 指定周期投注列表
+ *     description: 获取指定周期投注列表
+ *     tags:
+ *       - name: Client
+ *         description: 彩票管理
+ *     produces:
+ *       - application/json
+ *     security:
+ *       - ClientApiAuth: []
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Basic'
+ *                 - properties:
+ *                     data:
+ *                       type: object
+ *                       $ref: '#/definitions/PeriodData'
+ *
+ */
+router.get("/ticket", ClientPeriod.getPeriodTicketList);
+
 export default router;

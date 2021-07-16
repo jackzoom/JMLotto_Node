@@ -6,6 +6,7 @@ import logger from "../../utils/logger";
 import { formatTime } from "../../utils";
 import { PeriodDocument } from "../../models/period.model";
 import { getNextDrawDate } from "../../utils/ticket";
+import { Types } from "mongoose";
 
 type DrawParams = {
   /**
@@ -42,13 +43,13 @@ export default new (class ClientPeriod extends Base {
     this.getLastPeriod = this.getLastPeriod.bind(this);
     this.addNextPeriodByAuto = this.addNextPeriodByAuto.bind(this);
     this.updateDrawResult = this.updateDrawResult.bind(this);
+    this.getPeriodTicketList = this.getPeriodTicketList.bind(this);
   }
 
   /**
    * 获取周期列表 GetPeriodList
    * @group ClientPeriod
    * @route GET /client/period
-   * @header token
    * @param pageNum
    * @param pageSize
    */
@@ -76,7 +77,7 @@ export default new (class ClientPeriod extends Base {
    * 获取周期详情 GetPeriodDetail
    * @group ClientPeriod
    * @route GET /client/period/detail
-   * @header token
+   * @header token?
    * @param periodId
    */
   async getPeriodDetail(req: Request, res: Response) {
@@ -84,21 +85,11 @@ export default new (class ClientPeriod extends Base {
     try {
       PeriodDao.getPeriodById(periodId)
         .then(async (data: any) => {
-          OrderDao.getOrderListByPeriodId(periodId).then((orderList: any) => {
-            this.ResponseSuccess(res, {
-              ...data.toJSON(),
-              /** 个人投注信息 */
-              userBetting: null,
-              /** 用户投注列表 */
-              userBetList: orderList.map((item: any) => {
-                return {
-                  ...item,
-                  createTime: formatTime(item.createTime)
-                }
-              }),
-            });
-          })
-
+          this.ResponseSuccess(res, {
+            ...data.toJSON(),
+            /** 个人投注信息 */
+            userBetting: null
+          });
         })
         .catch((err: any) => {
           this.ResponseError(res, err);
@@ -113,7 +104,6 @@ export default new (class ClientPeriod extends Base {
    * 获取最后一期开奖信息 GetLastPeriod
    * @group ClientPeriod
    * @route GET /client/period/last
-   * @header token
    */
   async getLastPeriod(req: Request, res: Response) {
     try {
@@ -124,6 +114,47 @@ export default new (class ClientPeriod extends Base {
         .catch((err: any) => {
           this.ResponseError(res, err);
         });
+    } catch (err: any) {
+      this.ResponseError(res, err);
+    }
+  }
+
+
+  /**
+   * 获取指定周期投注列表 GetPeriodTicketList
+   * @group ClientPeriod
+   * @route GET /client/period/ticket
+   * @param periodId
+   * @param pageNum
+   * @param pageSize
+   */
+  async getPeriodTicketList(req: Request, res: Response) {
+    let periodId = req.query.periodId as string;
+    let pageNum = (req.query.pageNum || 1) as number;
+    let pageSize = (req.query.pageSize || 20) as number;
+    try {
+      OrderDao.getOrderListByPeriodId(
+        periodId,
+        pageNum,
+        pageSize
+      ).then(async (orderList: any) => {
+        let total = await OrderDao.getOrderTotalByPeriodId({
+          periodId: Types.ObjectId(periodId)
+        });
+        this.ResponsePaging(res, {
+          content: orderList.map((item: any) => {
+            return {
+              ...item,
+              createTime: formatTime(item.createTime)
+            }
+          }),
+          total,
+          pageNum,
+          pageSize
+        });
+      }).catch((err: any) => {
+        this.ResponseError(res, err);
+      });
     } catch (err: any) {
       this.ResponseError(res, err);
     }

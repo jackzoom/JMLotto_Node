@@ -21,6 +21,12 @@ export default new (class OrderDao<T> implements DBI<T> {
     });
     return orderModel.save();
   }
+  /**
+   * 获取订单列表
+   * @param userId 
+   * @param pageNum 
+   * @param pageSize 
+   */
   getOrderList(
     userId: string,
     pageNum: number = 1,
@@ -63,9 +69,12 @@ export default new (class OrderDao<T> implements DBI<T> {
   /**
    * 根据开奖周期ID，获取最近投注的10个订单
    * @param periodId 
-   * @returns 
+   * @param pageNum 
+   * @param pageSize 
    */
-  getOrderListByPeriodId(periodId: string): any {
+  getOrderListByPeriodId(periodId: string, pageNum: number = 1, pageSize: number = 20): any {
+    let limitVal = pageSize,
+      skipVal = pageNum > 1 ? limitVal * (pageNum - 1) : 0;
     return Order.aggregate([
       {
         $match: {
@@ -109,10 +118,18 @@ export default new (class OrderDao<T> implements DBI<T> {
         },
       },
     ])
-      .limit(10)
-      .skip(0)
+      .limit(+limitVal)
+      .skip(+skipVal)
       .sort({
         createTime: -1
       })
+  }
+
+  /**
+   * 统计开奖周期ID获取下单总数
+   * @param match 
+   */
+  getOrderTotalByPeriodId(match: any) {
+    return Order.find(match).countDocuments()
   }
 })();
