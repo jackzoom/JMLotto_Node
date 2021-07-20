@@ -34,32 +34,50 @@ type comparePasswordFunction = (
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
+    /** 小程序OpenID */
     openId: { type: String, unique: true, sparse: true },
+    /** 微信头像 */
     avatarUrl: String,
+    /** 微信昵称 */
     nickName: String,
+    /** 性别 */
     gender: { type: Number, default: 0, enum: [0, 1, 2] },
+    /** 国家 */
     country: String,
+    /** 省份 */
     province: String,
+    /** 城市 */
     city: String,
+    /** 语言 */
     language: String,
+    /** 微信UnionID */
     unionId: { type: String, unique: true, sparse: true },
+    /** 手机号码 */
     phoneNumber: { type: Number, unique: true, sparse: true },
+    /** 国家编号 */
     countryCode: Number,
+    /** 微信公众号登录SessionKey */
     sessionKey: String,
+    /** 登录账户 */
     account: { type: String, unique: true, sparse: true, select: false },
+    /** 密码 */
     password: {
       type: String,
       select: false,
     },
+    /** 最后登录 */
     lastLogin: Date,
+    /** 邀请者ID */
     parentId: {
       type: String,
       default: 0,
     },
+    /** 是否管理员 */
     isAdmin: {
       type: Number,
       default: 0,
     },
+    /** 是否删除 */
     isDelete: {
       type: Number,
       default: 0

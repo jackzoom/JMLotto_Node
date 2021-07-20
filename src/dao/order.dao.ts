@@ -57,8 +57,8 @@ export default new (class OrderDao<T> implements DBI<T> {
         },
       },
     ])
-      .limit(limitVal)
-      .skip(skipVal);
+      .limit(+limitVal)
+      .skip(+skipVal);
     // return Order.find({}).limit(Number(limitVal)).skip(Number(skipVal));
   }
   getOrderById(orderId: string): any {
@@ -114,15 +114,23 @@ export default new (class OrderDao<T> implements DBI<T> {
           avatarUrl: 1,
           userId: 1,
           createTime: 1,
-          totalTicket: { $size: "$ticketList" }, //累计投注订单数  
+          totalTicket: {
+            $size:
+              "$ticketList"
+          }, //累计投注订单数  
         },
       },
+      {
+        $sort: {
+          createTime: -1
+        }
+      },
+      {
+        $skip: +skipVal
+      }, {
+        $limit: +limitVal
+      }
     ])
-      .limit(+limitVal)
-      .skip(+skipVal)
-      .sort({
-        createTime: -1
-      })
   }
 
   /**

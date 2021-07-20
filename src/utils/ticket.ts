@@ -108,24 +108,26 @@ export const verifyTicketResult = (
 /**
  * 获取下一期开奖时间
  */
-export function getNextDrawDate(): Date {
+export function getNextDrawDate(currentDate?: Date): Date {
   //时间必须大于当前时间
   //判断当前为周几
-  let currentDays = moment().weekday();
+  let time = moment(currentDate || new Date());
+  let currentDays = time.weekday();
   let res;
   switch (currentDays) {
-    case 1:
+    case 0:
     case 2:
-      res = moment().day(3);
+    case 5:
+      res = time.add(1, "days");
+      break;
+    case 1:
+    case 4:
+    case 6:
+      res = time.add(2, "days");
       break;
     case 3:
-    case 4:
-    case 5:
-      res = moment().day(6);
+      res = time.add(3, "days");
       break;
-    case 6:
-    case 0:
-      res = moment().day(1);
   }
-  return res.hour(20).minute(50).second(0).millisecond(0).toDate();
+  return res.hour(20).minute(30).second(0).millisecond(0).toDate();
 }

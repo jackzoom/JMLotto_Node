@@ -36,7 +36,7 @@ export default class PeriodSchedule {
   start(jobId: string) {
     return scheduleJob(
       jobId,
-      { hour: "12", minute: "50", dayOfWeek: [1, 3, 6] },
+      { hour: "12", minute: "30", dayOfWeek: [1, 3, 6] },
       () => {
         //1. 抓取开奖信息
         //2. 创建下期开奖信息

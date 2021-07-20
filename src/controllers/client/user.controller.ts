@@ -60,6 +60,11 @@ export default new (class AdminUser extends Base {
               scope: AppletLogin,
             }),
           });
+        } else if (!userInfo) {
+          return this.ResponseError(res, {
+            code: ApiHttpCode.RequestUserUnRegister,
+            message: "用户未注册"
+          })
         }
         let userDoc = {
           openId: openid,

@@ -2,11 +2,12 @@ import { Request, Response } from "express"; // express 申明文件定义的类
 import Base from "../base.controller";
 import PeriodDao from "../../dao/period.dao";
 import OrderDao from "../../dao/order.dao";
-import logger from "../../utils/logger";
+import TicketDao from "../../dao/ticket.dao"
 import { formatTime } from "../../utils";
 import { PeriodDocument } from "../../models/period.model";
 import { getNextDrawDate } from "../../utils/ticket";
 import { Types } from "mongoose";
+import { JwtAuthResponse } from "../../interface/auth.interface";
 
 type DrawParams = {
   /**
@@ -80,15 +81,16 @@ export default new (class ClientPeriod extends Base {
    * @header token?
    * @param periodId
    */
-  async getPeriodDetail(req: Request, res: Response) {
-    let periodId = req.query.periodId as string;
+  async getPeriodDetail(req: Request, res: JwtAuthResponse) {
     try {
+      let periodId = req.query.periodId as string;
+      let { userId } = res.authUser;
       PeriodDao.getPeriodById(periodId)
         .then(async (data: any) => {
           this.ResponseSuccess(res, {
             ...data.toJSON(),
             /** 个人投注信息 */
-            userBetting: null
+            userBetting: userId ? await TicketDao.getTicketListByPeriodId(periodId, userId) : null
           });
         })
         .catch((err: any) => {

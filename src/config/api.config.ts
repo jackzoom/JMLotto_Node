@@ -41,6 +41,12 @@ export const ApiHttpCode = {
    */
   RequestFail: `0001`,
   /**
+   * 用户未注册
+   * @summary 通用响应errorCode
+   * @default `4000`
+   */
+  RequestUserUnRegister: `4000`,
+  /**
    * 未授权的请求
    * @summary 响应状态码
    * @default 401
@@ -51,7 +57,7 @@ export const ApiHttpCode = {
    * @summary 响应状态码
    * @default 403
    */
-  AuthFail: 403,
+  AuthFail: 403
 };
 
 /**
