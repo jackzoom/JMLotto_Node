@@ -11,8 +11,15 @@ export default function verifyToken(whiteList: Array<string>, scope?: string) {
     try {
       const token = req.headers[ApiHeaderKey] as string;
       if (whiteList.includes(path)) {
-        res.authUser = token ? await VerifyToken(token) : {};
-        return await next();
+        try {
+          //当Token失效时，依旧返回请求内容，而不是抛出Token错误
+          let user = token ? await VerifyToken(token) : {};
+          res.authUser = user;
+          return await next();
+        } catch (e) {
+          console.log("白名单Token验证异常：", e)
+          return await next();
+        }
       } else {
         const user = (await VerifyToken(token)) as any;
         res.authUser = user;
