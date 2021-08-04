@@ -60,7 +60,7 @@ const ticketSchema = new mongoose.Schema<TicketDocument>(
      */
     multiple: {
       type: Number,
-      default: 0,
+      default: 1,
     },
     /**
      * 用户ID

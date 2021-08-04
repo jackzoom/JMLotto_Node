@@ -140,7 +140,7 @@ export default new (class ClientPeriod extends Base {
         pageNum,
         pageSize
       ).then(async (orderList: any) => {
-        let total = await OrderDao.getOrderTotalByPeriodId({
+        let total = await OrderDao.getOrderTotal({
           periodId: Types.ObjectId(periodId)
         });
         this.ResponsePaging(res, {

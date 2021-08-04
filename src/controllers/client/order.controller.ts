@@ -7,6 +7,8 @@ import { JwtAuthResponse } from "../../interface/auth.interface";
 import { TicketDocument } from "../../models/ticket.model";
 import { getTicketPrice, verifyTicketResult } from "../../utils/ticket";
 import logger from "../../utils/logger";
+import { Types } from "mongoose";
+import { formatTime } from "../../utils";
 
 export default new (class ClientOrder extends Base {
   constructor() {
@@ -28,8 +30,12 @@ export default new (class ClientOrder extends Base {
     let batchList: Array<TicketDocument | any> = [];
     let { ticketList, periodId } = req.body;
     let { userId } = res.authUser;
-    let totalPrice = 0;    
+    let totalPrice = 0;
     try {
+      //单倍投注：2
+      //2倍投注：2+1
+      //3倍投注：2+2
+      //n倍投注: 2+n-1
       ticketList.forEach((item: any) => {
         batchList.push({
           redNumber: item.redNumber,
@@ -109,20 +115,39 @@ export default new (class ClientOrder extends Base {
     let pageSize = (req.query.pageSize || 20) as number;
     try {
       OrderDao.getOrderList(userId, pageNum, pageSize)
-        .then((data: any) => {
-          this.ResponseSuccess(
-            res,
-            data.map((item: any) => {
+        .then(async (data: any) => {
+          let total = await OrderDao.getOrderTotal({
+            userId: Types.ObjectId(userId),
+          });
+          this.ResponsePaging(res, {
+            pageNum,
+            pageSize,
+            total,
+            content: data.map((item: any) => {
+              let winningList: Array<any> = [];
               item.orderId = item._id;
               delete item._id;
               item.ticketList = item.ticketList.map((titem: any) => {
                 titem.ticketId = titem._id;
                 delete titem._id;
+                titem.createdAt = formatTime(titem.createdAt);
+                titem.updatedAt = formatTime(titem.updatedAt);
+                titem.verifyDate = formatTime(titem.verifyDate);
+                if (
+                  titem.ticketStatus !== 0 &&
+                  titem.winningInfo.status === 1
+                ) {
+                  winningList.push(titem);
+                }
                 return titem;
               });
+              item.totalTicket = item.ticketList.length;
+              item.winningList = winningList;
+              item.createdAt = formatTime(item.createdAt);
+              item.updatedAt = formatTime(item.updatedAt);
               return item;
-            })
-          );
+            }),
+          });
         })
         .catch((err: any) => {
           this.ResponseError(res, err);
