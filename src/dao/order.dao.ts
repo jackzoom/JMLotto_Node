@@ -5,6 +5,7 @@ interface OrderFields {
   orderPrice: number;
   periodId: string;
   userId: string;
+  ticketStatus: number;
 }
 
 interface DBI<T> {
@@ -13,6 +14,7 @@ interface DBI<T> {
   getOrderById(orderId: string): any;
   getOrderListByPeriodId(periodId: string): any;
   getOrderTotal(match: any): any;
+  updateOrderStatus(orderId: string, ticketStatus: number): any;
 }
 
 export default new (class OrderDao<T> implements DBI<T> {
@@ -33,8 +35,8 @@ export default new (class OrderDao<T> implements DBI<T> {
     pageNum: number = 1,
     pageSize: number = 20
   ): any {
-    let limitVal = pageSize,
-      skipVal = pageNum > 1 ? limitVal * (pageNum - 1) : 0;
+    let limitVal = +pageSize,
+      skipVal = pageNum > 1 ? limitVal * (+pageNum - 1) : 0;
     return Order.aggregate([
       {
         $match: {
@@ -54,16 +56,16 @@ export default new (class OrderDao<T> implements DBI<T> {
           __v: 0,
           ticketList: {
             __v: 0,
-          }
+          },
         },
       },
     ])
       .sort({
         createdAt: -1,
       })
-      .limit(+limitVal)
-      .skip(+skipVal);
-    // return Order.find({}).limit(Number(limitVal)).skip(Number(skipVal));
+      .skip(+skipVal)
+      .limit(+limitVal);
+    // return Order.find({}).skip(Number(skipVal)).limit(Number(limitVal));
   }
   getOrderById(orderId: string): any {
     return Order.findOne({
@@ -149,5 +151,21 @@ export default new (class OrderDao<T> implements DBI<T> {
    */
   getOrderTotal(match: any) {
     return Order.find(match).countDocuments();
+  }
+
+  /**
+   * 更新订单状态
+   * @param orderId
+   * @param ticketStatus
+   */
+  updateOrderStatus(orderId: string, ticketStatus: number) {
+    return Order.updateOne(
+      {
+        _id: Types.ObjectId(orderId),
+      },
+      {
+        ticketStatus: +ticketStatus,
+      }
+    );
   }
 })();

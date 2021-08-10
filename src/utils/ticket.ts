@@ -36,16 +36,24 @@ const c = (m: number, n: number) => {
  * @param redLen 红球个数
  * @param blueLen 篮球个数
  * @param singlePrice 每注单价
- * @returns
+ * @param multiple 每注倍数
+ * @param isMargin 是否追加
+ * @description
+ * - multiple 大于1时，相当于n*单票金额
+ * - isMargin 勾选追加后，单票单价追加1元
  * @see https://www.lottery.gov.cn/dlt/ltjsq/index.html 大乐透计算器
  * @see https://static.sporttery.cn/res_1_0/tcw/default/tcdlt/num.js 大乐透计算器核心算法
+ *
  */
 export const getTicketPrice = (
   redLen: number,
   blueLen: number,
-  singlePrice: number = 2
+  singlePrice: number = 2,
+  multiple: number = 1,
+  isMargin: boolean = false
 ): number => {
-  return c(redLen, 5) * c(blueLen, 2) * singlePrice;
+  singlePrice = isMargin ? ++singlePrice : singlePrice;
+  return multiple * singlePrice * c(redLen, 5) * c(blueLen, 2);
 };
 
 /**

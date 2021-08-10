@@ -26,6 +26,15 @@ const OrderSchema = new mongoose.Schema<OrderDocument>(
       ref: "Period",
     },
     /**
+     * 状态
+     * @value 0 待开奖 1 已中奖 2 未中奖
+     * @default 0
+     */
+    ticketStatus: {
+      type: Number,
+      default: 0,
+    },
+    /**
      * 用户ID
      */
     userId: {

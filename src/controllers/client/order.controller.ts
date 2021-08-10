@@ -27,15 +27,20 @@ export default new (class ClientOrder extends Base {
    * @param periodId 期数ID
    */
   async addOrder(req: Request, res: JwtAuthResponse): Promise<void> {
+    /** 投注列表 */
     let batchList: Array<TicketDocument | any> = [];
     let { ticketList, periodId } = req.body;
     let { userId } = res.authUser;
+    /** 投注合计金额 */
     let totalPrice = 0;
+    /** 开奖状态 0：未开奖 1：已中奖 2：未中奖 */
+    let ticketStatus = 0;
+    /** 中奖列表 */
+    let drawList: Array<any> = [];
     try {
-      //单倍投注：2
-      //2倍投注：2+1
-      //3倍投注：2+2
-      //n倍投注: 2+n-1
+      /** 开奖结果 */
+      let drawResult = await PeriodDao.getPeriodById(periodId);
+
       ticketList.forEach((item: any) => {
         batchList.push({
           redNumber: item.redNumber,
@@ -46,52 +51,53 @@ export default new (class ClientOrder extends Base {
         totalPrice += getTicketPrice(
           item.redNumber.split(",").length,
           item.blueNumber.split(",").length,
-          2
+          2,
+          item.multiple,
+          item.isMargin === 1
         );
       });
+
+      // 校验当前期是否已经开奖
+      // - 已开奖
+      //   - 直接验证中奖信息
+      // - 未开奖
+      //
+
+      if (drawResult.periodStatus === 1) {
+        for (let i = 0; i < batchList.length; i++) {
+          let ticketItem = batchList[i];
+          let redArr = ticketItem.redNumber.split(",");
+          let blueArr = ticketItem.blueNumber.split(",");
+          let result = verifyTicketResult(
+            redArr,
+            blueArr,
+            drawResult.lotteryResult.split(" ")
+          );
+          batchList[i].winningInfo = result;
+          if (result.status === 1) {
+            logger.info("[新增彩票] 中奖彩票:" + result.rankData.toString());
+            drawList.push(result);
+          }
+        }
+        ticketStatus = drawList.length ? 1 : 2;
+      }
 
       //生成订单 + 计算订单金额
       let orderRes = await OrderDao.addOrder({
         orderPrice: totalPrice,
         periodId,
         userId,
+        ticketStatus,
       });
+
       batchList = batchList.map((item) => {
         return {
           ...item,
           orderId: orderRes._id,
         };
       });
+
       TicketDao.addTicketBatch(batchList).then(async (ticketInfo: any) => {
-        // 校验当前期是否已经开奖
-        // - 已开奖
-        //   - 直接验证中奖信息
-        // - 未开奖
-        //
-        let drawResult = await PeriodDao.getPeriodById(periodId);
-        let drawList: Array<any> = [];
-        if (drawResult.periodStatus === 1) {
-          for (let i = 0; i < ticketInfo.length; i++) {
-            let ticketItem = ticketInfo[i];
-            let redArr = ticketItem.redNumber.split(",");
-            let blueArr = ticketItem.blueNumber.split(",");
-            let result = verifyTicketResult(
-              redArr,
-              blueArr,
-              drawResult.lotteryResult.split(" ")
-            );
-            let drawTicket = await TicketDao.updateTicketStatus(
-              ticketItem._id,
-              result
-            );
-            if (result.status === 1) {
-              logger.info(
-                "[新增彩票] 更新一个中奖彩票 ticketId：" + ticketItem._id
-              );
-              drawList.push(drawTicket.toJSON());
-            }
-          }
-        }
         this.ResponseSuccess(res, {
           ticketList: ticketInfo,
           drawList,
